@@ -25,39 +25,35 @@ std::shared_ptr<ICsp> GetSomeCSP() {
 	else return std::make_shared<VipNetCsp>();
 }
 
-// Проверка, связан ли сертификат с целевым провайдером
 bool IsProviderCertificate(PCCERT_CONTEXT pCertContext, const std::string& targetProvider) {
     DWORD dwProvNameSize = 0;
     if (!CertGetCertificateContextProperty(pCertContext, CERT_KEY_PROV_INFO_PROP_ID, NULL, &dwProvNameSize)) {
-        return false; // Не удалось получить информацию
-    }
+        return false;
 
-    CRYPT_KEY_PROV_INFO* pProvInfo = (CRYPT_KEY_PROV_INFO*)malloc(dwProvNameSize);
-    if (!pProvInfo) {
-        return false; // Ошибка выделения памяти
-    }
+        CRYPT_KEY_PROV_INFO* pProvInfo = (CRYPT_KEY_PROV_INFO*)malloc(dwProvNameSize);
+        if (!pProvInfo) {
+            return false;
+        }
 
-    if (!CertGetCertificateContextProperty(pCertContext, CERT_KEY_PROV_INFO_PROP_ID, pProvInfo, &dwProvNameSize)) {
+        if (!CertGetCertificateContextProperty(pCertContext, CERT_KEY_PROV_INFO_PROP_ID, pProvInfo, &dwProvNameSize)) {
+            free(pProvInfo);
+            return false;
+        }
+
+        std::string providerName;
+        int len = WideCharToMultiByte(CP_UTF8, 0, pProvInfo->pwszProvName, -1, NULL, 0, NULL, NULL);
+        if (len > 0) {
+            providerName.resize(len - 1);
+            WideCharToMultiByte(CP_UTF8, 0, pProvInfo->pwszProvName, -1, &providerName[0], len, NULL, NULL);
+        }
         free(pProvInfo);
-        return false; // Не удалось получить данные
+        return providerName.find(targetProvider) != std::string::npos;
     }
-
-    std::string providerName;
-    int len = WideCharToMultiByte(CP_UTF8, 0, pProvInfo->pwszProvName, -1, NULL, 0, NULL, NULL);
-    if (len > 0) {
-        providerName.resize(len - 1);
-        WideCharToMultiByte(CP_UTF8, 0, pProvInfo->pwszProvName, -1, &providerName[0], len, NULL, NULL);
-    }
-    free(pProvInfo);
-
-    // Проверяем, что провайдер соответствует целевому имени
-    return providerName.find(targetProvider) != std::string::npos;
 }
 
-// Преобразует имя субъекта сертификата в строку
 std::string GetCertificateSubject(PCCERT_CONTEXT pCertContext) {
     if (!pCertContext) {
-        return "Ошибка: пустой контекст сертификата";
+        return "";
     }
 
     DWORD dwSize = CertGetNameStringA(
@@ -70,7 +66,7 @@ std::string GetCertificateSubject(PCCERT_CONTEXT pCertContext) {
     );
 
     if (dwSize <= 1) {
-        return "Не удалось извлечь имя субъекта";
+        return "";
     }
 
     std::string subjectName(dwSize - 1, '\0');
@@ -86,19 +82,17 @@ std::string GetCertificateSubject(PCCERT_CONTEXT pCertContext) {
     return subjectName;
 }
 
-// Находит все сертификаты от указанного провайдера
 std::vector<PCCERT_CONTEXT> FindProviderCertificates(const std::string& targetProvider) {
     std::vector<PCCERT_CONTEXT> certContexts;
 
     HCERTSTORE hStore = CertOpenStore(CERT_STORE_PROV_SYSTEM, 0, NULL, CERT_SYSTEM_STORE_CURRENT_USER, L"MY");
     if (!hStore) {
-        std::cerr << "Не удалось открыть хранилище сертификатов." << std::endl;
+        std::cerr << "Fail" << std::endl;
         return certContexts;
     }
 
     PCCERT_CONTEXT pCertContext = NULL;
 
-    /*std::cout << "Поиск сертификатов от провайдера: " << targetProvider << "..." << std::endl;*/
     while (true) {
         pCertContext = CertFindCertificateInStore(
             hStore,
@@ -110,29 +104,19 @@ std::vector<PCCERT_CONTEXT> FindProviderCertificates(const std::string& targetPr
         );
 
         if (pCertContext == NULL) {
-            break; // Все сертификаты найдены
+            break;
         }
 
-        // Проверяем, что сертификат относится к нужному провайдеру
         if (IsProviderCertificate(pCertContext, targetProvider)) {
-            //std::cout << "Найден сертификат:" << std::endl;
-            //std::cout << "  Субъект: " << GetCertificateSubject(pCertContext) << std::endl;
-            //std::cout << "------------------------------------------";
-
-            // Создаем дубликат контекста сертификата и добавляем его в вектор
             PCCERT_CONTEXT pDupCertContext = CertDuplicateCertificateContext(pCertContext);
             if (pDupCertContext) {
                 certContexts.push_back(pDupCertContext);
             }
             else {
-                std::cerr << "Не удалось дублировать сертификат." << std::endl;
+                std::cerr << "Fail to dup" << std::endl;
             }
         }
     }
-    // nepizdec
-    //for (auto cert : certContexts) {
-    //    std::cout << "Субъект сертификата: " << GetCertificateSubject(cert) << std::endl;
-    //}
 
     return certContexts;
 }
