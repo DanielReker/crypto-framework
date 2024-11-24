@@ -14,8 +14,8 @@ Blob CryptoProCertificate::Decrypt(const Blob& encrypted_data) const {
 	return crypto_pro_csp_.DecryptWithCertificate(encrypted_data, *this);
 }
 
-Blob CryptoProCertificate::SignCades(const Blob& data, CadesType type) const {
-	return crypto_pro_csp_.SignCadesWithCertificate(data, type, *this);
+Blob CryptoProCertificate::SignCades(const Blob& data, CadesType type, bool detached) const {
+	return crypto_pro_csp_.SignCadesWithCertificate(data, type, *this, detached);
 }
 
 bool CryptoProCertificate::VerifyCades(const Blob& signature, CadesType type) const {
@@ -32,4 +32,8 @@ bool CryptoProCertificate::VerifyXades(const Blob& signature, XadesType type) co
 
 std::string CryptoProCertificate::GetSubjectName() const {
 	return subject_name_;
+}
+
+PCCERT_CONTEXT CryptoProCertificate::GetCertContext() const {
+	return context_;
 }

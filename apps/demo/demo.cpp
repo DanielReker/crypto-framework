@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "cryptofw/ICsp.hpp"
+#include "cryptofw/Blob.hpp"
 #include <cryptofw/ICertificate.hpp>
 #include <cryptofw/utils.hpp>
 #include <cryptofw/CryptoProCsp.hpp>
@@ -23,6 +24,12 @@ int main(int argc, char* argv[]) {
 		std::cout << "CryptoPro certificate, subject: " << cert->GetSubjectName() << '\n';
 	}
 	std::cout << "END!";
+
+	auto certs = csp1->GetCertificates();
+	Blob data(10, 25);
+	auto res = certs[0]->SignCades(data, CadesType::kXLongType1, true);
+	std::cout << res.size();
+
 	return 0;
 	//auto certificates = csp->GetCertificates();
 

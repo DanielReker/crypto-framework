@@ -14,8 +14,8 @@ Blob VipNetCertificate::Decrypt(const Blob& encrypted_data) const {
 	return vip_net_csp_.DecryptWithCertificate(encrypted_data, *this);
 }
 
-Blob VipNetCertificate::SignCades(const Blob& data, CadesType type) const {
-	return vip_net_csp_.SignCadesWithCertificate(data, type, *this);
+Blob VipNetCertificate::SignCades(const Blob& data, CadesType type, bool detached) const {
+	return vip_net_csp_.SignCadesWithCertificate(data, type, *this, detached);
 }
 
 bool VipNetCertificate::VerifyCades(const Blob& signature, CadesType type) const {
@@ -32,4 +32,8 @@ bool VipNetCertificate::VerifyXades(const Blob& signature, XadesType type) const
 
 std::string VipNetCertificate::GetSubjectName() const {
 	return subject_name_;
+}
+
+PCCERT_CONTEXT VipNetCertificate::GetCertContext() const {
+	return context_;
 }

@@ -13,7 +13,7 @@ public:
 
     virtual Blob Decrypt(const Blob& encrypted_data) const = 0;
 
-    virtual Blob SignCades(const Blob& data, CadesType type) const = 0;
+    virtual Blob SignCades(const Blob& data, CadesType type, bool detached) const = 0;
     virtual bool VerifyCades(const Blob& signature, CadesType type) const = 0;
 
     virtual Blob SignXades(const Blob& data, XadesType type) const = 0;

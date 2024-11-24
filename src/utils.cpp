@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <cades.h>
 
 
 std::ostream& operator<<(std::ostream& out, const Blob& blob) {
@@ -118,4 +119,27 @@ std::vector<PCCERT_CONTEXT> FindProviderCertificates(const std::string& target_p
     }
 
     return cert_contexts;
+}
+
+const char* GetHashOid(PCCERT_CONTEXT p_cert) {
+    const char* GOST_R3410_12_256 = "1.2.643.7.1.1.1.1";
+    const char* GOST_R3410EL = "1.2.643.2.2.19";
+    const char* GOST_R3410_12_512 = "1.2.643.7.1.1.1.2";
+    const char* GOST_R3411 = "1.2.643.2.2.9";
+    const char* GOST_R3411_12_256 = "1.2.643.7.1.1.2.2";
+    const char* GOST_R3411_12_512 = "1.2.643.7.1.1.2.3";
+    const char* pKeyAlg = p_cert->pCertInfo->SubjectPublicKeyInfo.Algorithm.pszObjId;
+    if (strcmp(pKeyAlg, GOST_R3410EL) == 0)
+    {
+        return GOST_R3411;
+    }
+    else if (strcmp(pKeyAlg, GOST_R3410_12_256) == 0)
+    {
+        return GOST_R3411_12_256;
+    }
+    else if (strcmp(pKeyAlg, GOST_R3410_12_512) == 0)
+    {
+        return GOST_R3411_12_512;
+    }
+    return NULL;
 }
