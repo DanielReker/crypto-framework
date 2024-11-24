@@ -23,40 +23,40 @@ std::shared_ptr<ICsp> GetSomeCSP() {
 	else return std::make_shared<VipNetCsp>();
 }
 
-bool IsProviderCertificate(PCCERT_CONTEXT pCertContext, const std::string& targetProvider) {
-    DWORD dwProvNameSize = 0;
-    if (!CertGetCertificateContextProperty(pCertContext, CERT_KEY_PROV_INFO_PROP_ID, NULL, &dwProvNameSize)) {
+bool IsProviderCertificate(PCCERT_CONTEXT p_cert_context, const std::string& target_provider) {
+    DWORD dw_prov_name_size = 0;
+    if (!CertGetCertificateContextProperty(p_cert_context, CERT_KEY_PROV_INFO_PROP_ID, NULL, &dw_prov_name_size)) {
         return false;
     }
 
-    CRYPT_KEY_PROV_INFO* pProvInfo = (CRYPT_KEY_PROV_INFO*)malloc(dwProvNameSize);
-    if (!pProvInfo) {
+    CRYPT_KEY_PROV_INFO* p_prov_info = (CRYPT_KEY_PROV_INFO*)malloc(dw_prov_name_size);
+    if (!p_prov_info) {
         return false;
     }
 
-    if (!CertGetCertificateContextProperty(pCertContext, CERT_KEY_PROV_INFO_PROP_ID, pProvInfo, &dwProvNameSize)) {
-        free(pProvInfo);
+    if (!CertGetCertificateContextProperty(p_cert_context, CERT_KEY_PROV_INFO_PROP_ID, p_prov_info, &dw_prov_name_size)) {
+        free(p_prov_info);
         return false;
     }
 
-    std::string providerName;
-    int len = WideCharToMultiByte(CP_UTF8, 0, pProvInfo->pwszProvName, -1, NULL, 0, NULL, NULL);
+    std::string provider_name;
+    int len = WideCharToMultiByte(CP_UTF8, 0, p_prov_info->pwszProvName, -1, NULL, 0, NULL, NULL);
     if (len > 0) {
-        providerName.resize(len - 1);
-        WideCharToMultiByte(CP_UTF8, 0, pProvInfo->pwszProvName, -1, &providerName[0], len, NULL, NULL);
+        provider_name.resize(len - 1);
+        WideCharToMultiByte(CP_UTF8, 0, p_prov_info->pwszProvName, -1, &provider_name[0], len, NULL, NULL);
     }
-    free(pProvInfo);
+    free(p_prov_info);
 
-    return providerName.find(targetProvider) != std::string::npos;
+    return provider_name.find(target_provider) != std::string::npos;
 }
 
-std::string GetCertificateSubject(PCCERT_CONTEXT pCertContext) {
-    if (!pCertContext) {
+std::string GetCertificateSubject(PCCERT_CONTEXT p_cert_context) {
+    if (!p_cert_context) {
         return "";
     }
 
-    DWORD dwSize = CertGetNameStringA(
-        pCertContext,
+    DWORD dw_size = CertGetNameStringA(
+        p_cert_context,
         CERT_NAME_SIMPLE_DISPLAY_TYPE,
         0,
         NULL,
@@ -64,52 +64,52 @@ std::string GetCertificateSubject(PCCERT_CONTEXT pCertContext) {
         0
     );
 
-    if (dwSize <= 1) {
+    if (dw_size <= 1) {
         return "";
     }
 
-    std::string subjectName(dwSize - 1, '\0');
+    std::string subject_name(dw_size - 1, '\0');
     CertGetNameStringA(
-        pCertContext,
+        p_cert_context,
         CERT_NAME_SIMPLE_DISPLAY_TYPE,
         0,
         NULL,
-        &subjectName[0],
-        dwSize
+        &subject_name[0],
+        dw_size
     );
 
-    return subjectName;
+    return subject_name;
 }
 
-std::vector<PCCERT_CONTEXT> FindProviderCertificates(const std::string& targetProvider) {
-    std::vector<PCCERT_CONTEXT> certContexts;
+std::vector<PCCERT_CONTEXT> FindProviderCertificates(const std::string& target_provider) {
+    std::vector<PCCERT_CONTEXT> cert_contexts;
 
-    HCERTSTORE hStore = CertOpenStore(CERT_STORE_PROV_SYSTEM, 0, NULL, CERT_SYSTEM_STORE_CURRENT_USER, L"MY");
-    if (!hStore) {
+    HCERTSTORE h_store = CertOpenStore(CERT_STORE_PROV_SYSTEM, 0, NULL, CERT_SYSTEM_STORE_CURRENT_USER, L"MY");
+    if (!h_store) {
         std::cerr << "Fail" << std::endl;
-        return certContexts;
+        return cert_contexts;
     }
 
-    PCCERT_CONTEXT pCertContext = NULL;
+    PCCERT_CONTEXT p_cert_context = NULL;
 
     while (true) {
-        pCertContext = CertFindCertificateInStore(
-            hStore,
+        p_cert_context = CertFindCertificateInStore(
+            h_store,
             X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
             0,
             CERT_FIND_ANY,
             NULL,
-            pCertContext
+            p_cert_context
         );
 
-        if (pCertContext == NULL) {
+        if (p_cert_context == NULL) {
             break;
         }
 
-        if (IsProviderCertificate(pCertContext, targetProvider)) {
-            PCCERT_CONTEXT pDupCertContext = CertDuplicateCertificateContext(pCertContext);
-            if (pDupCertContext) {
-                certContexts.push_back(pDupCertContext);
+        if (IsProviderCertificate(p_cert_context, target_provider)) {
+            PCCERT_CONTEXT p_dup_cert_context = CertDuplicateCertificateContext(p_cert_context);
+            if (p_dup_cert_context) {
+                cert_contexts.push_back(p_dup_cert_context);
             }
             else {
                 std::cerr << "Fail to dup" << std::endl;
@@ -117,5 +117,5 @@ std::vector<PCCERT_CONTEXT> FindProviderCertificates(const std::string& targetPr
         }
     }
 
-    return certContexts;
+    return cert_contexts;
 }

@@ -32,5 +32,4 @@ bool VipNetCertificate::VerifyXades(const Blob& signature, XadesType type) const
 
 std::string VipNetCertificate::GetSubjectName() const {
 	return subject_name_;
-	;
 }

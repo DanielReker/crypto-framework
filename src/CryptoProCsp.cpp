@@ -5,15 +5,13 @@
 #include "cryptofw/utils.hpp"
 
 CryptoProCsp::CryptoProCsp() {
-	auto certificatesContextList = FindProviderCertificates("Crypto-Pro");
-	for (auto context : certificatesContextList) {
-		std::string name = GetCertificateSubject(context);
+	auto certs = FindProviderCertificates("Crypto-Pro");
+	for (auto context : certs) {
 		certificates_.push_back(std::make_shared<CryptoProCertificate>(*this, GetCertificateSubject(context), context));
 	}
 }
 
 std::vector<std::shared_ptr<ICertificate>> CryptoProCsp::GetCertificates() {
-
 	return { certificates_.begin(), certificates_.end() };
 }
 

@@ -14,10 +14,13 @@ int main(int argc, char* argv[]) {
 	std::cout << "Hello from demo app\n";
 
 	std::shared_ptr<VipNetCsp> csp1 = std::make_shared<VipNetCsp>();
-	std::shared_ptr<ICsp> csp = csp1;
+	for (const auto& cert : csp1->GetCertificates()) {
+		std::cout << "Vipnet certificate, subject: " << cert->GetSubjectName() << '\n';
+	}
 
-	for (const auto& cert : csp->GetCertificates()) {
-		std::cout << "Subject " <<cert->GetSubjectName() << '\n';
+	std::shared_ptr<CryptoProCsp> csp2 = std::make_shared<CryptoProCsp>();
+	for (const auto& cert : csp2->GetCertificates()) {
+		std::cout << "CryptoPro certificate, subject: " << cert->GetSubjectName() << '\n';
 	}
 	std::cout << "END!";
 	return 0;

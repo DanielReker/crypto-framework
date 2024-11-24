@@ -5,9 +5,8 @@
 #include "cryptofw/utils.hpp"
 
 VipNetCsp::VipNetCsp() {
-	auto certificatesContextList = FindProviderCertificates("Infotecs");
-	for (auto context : certificatesContextList) {
-		std::string name = GetCertificateSubject(context);
+	auto certs = FindProviderCertificates("Infotecs");
+	for (auto context : certs) {
 		certificates_.push_back(std::make_shared<VipNetCertificate>(*this, GetCertificateSubject(context), context));
 	}
 }

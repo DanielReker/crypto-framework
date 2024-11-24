@@ -32,4 +32,4 @@ bool CryptoProCertificate::VerifyXades(const Blob& signature, XadesType type) co
 
 std::string CryptoProCertificate::GetSubjectName() const {
 	return subject_name_;
-;}
+}

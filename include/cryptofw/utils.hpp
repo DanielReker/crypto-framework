@@ -14,6 +14,6 @@ std::ostream& operator<<(std::ostream& out, const Blob& blob);
 // Just for API demonstration
 std::shared_ptr<ICsp> GetSomeCSP();
 
-
-std::string GetCertificateSubject(PCCERT_CONTEXT pCertContext);
-std::vector<PCCERT_CONTEXT> FindProviderCertificates(const std::string& targetProvider);
+bool IsProviderCertificate(PCCERT_CONTEXT p_cert_context, const std::string& target_provider);
+std::string GetCertificateSubject(PCCERT_CONTEXT p_cert_context);
+std::vector<PCCERT_CONTEXT> FindProviderCertificates(const std::string& target_provider);
