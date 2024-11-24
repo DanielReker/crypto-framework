@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <functional>
 
 #include <cryptofw/utils.hpp>
 #include <cryptofw/CryptoProCsp.hpp>
@@ -228,4 +229,36 @@ Blob DecryptData(PCCERT_CONTEXT cert, const Blob& encryptedData)
     CertCloseStore(hCertStore, CERT_CLOSE_STORE_FORCE_FLAG);
 
     return decryptedData;
+}
+
+std::shared_ptr<ICsp> GetAvailableCsp(){
+    static std::vector<std::pair<std::string, std::function<ICsp*()>>> providers{
+        {"Crypto-Pro", [](){return new CryptoProCsp();}},
+        {"Infotecs", [](){return new VipNetCsp();}}
+    };
+
+    DWORD       cbName;
+    DWORD       dwType;
+    DWORD       dwIndex;
+    CHAR        *pszName = NULL; 
+
+    dwIndex = 0;
+    while(CryptEnumProviders(dwIndex, NULL, 0, &dwType, NULL, &cbName)) {
+        if (!(pszName = (LPTSTR)LocalAlloc(LMEM_ZEROINIT, cbName))) {
+           printf("ERROR - LocalAlloc failed\n");
+           exit(1);
+        }
+        
+        if (CryptEnumProviders(dwIndex++, NULL, 0, &dwType, pszName, &cbName)) {
+            for(const auto& prov : providers){
+                if(std::string(pszName).find(prov.first) != std::string::npos)
+                    return std::shared_ptr<ICsp>(prov.second());
+            }
+        }
+        else {
+            printf("ERROR - CryptEnumProviders failed.\n");
+            exit(1);
+        }
+        LocalFree(pszName);
+    }
 }
