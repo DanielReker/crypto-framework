@@ -151,3 +151,81 @@ void SaveDataToFile(const Blob& data, const std::string& file_path) {
     std::ofstream outfile(file_path, std::ios::out | std::ios::binary);
     outfile.write(reinterpret_cast<const char*>(&data[0]), data.size());
 }
+
+Blob EncryptData(PCCERT_CONTEXT cert, const Blob& sourceData)
+{
+    Blob encryptedData;
+    // std::cout << "\nEncrypting data. Source data size = " << sourceData.size() << ".\n";
+
+    CRYPT_ENCRYPT_MESSAGE_PARA encryptParam;
+    memset(&encryptParam, 0, sizeof(encryptParam));
+    encryptParam.cbSize = sizeof(encryptParam);
+    encryptParam.dwMsgEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
+    encryptParam.ContentEncryptionAlgorithm.pszObjId = (LPSTR)"1.2.643.2.2.21";
+
+    DWORD encryptedDataSize = 0;
+
+    if (!CryptEncryptMessage(&encryptParam, 1, &cert, &sourceData[0], (DWORD)sourceData.size(), NULL,
+        &encryptedDataSize))
+    {
+        throw "First CryptEncryptMessage() call failed.";
+    }
+
+    encryptedData.resize(encryptedDataSize);
+
+    if (!CryptEncryptMessage(&encryptParam, 1, &cert, &sourceData[0], (DWORD)sourceData.size(), &encryptedData[0],
+        &encryptedDataSize))
+    {
+        throw "Second CryptEncryptMessage() call failed.";
+    }
+
+    return encryptedData;
+}
+
+Blob DecryptData(PCCERT_CONTEXT cert, const Blob& encryptedData)
+{
+    Blob decryptedData;
+    std::cout << "\nDecrypting data. Encrypted data size = " << encryptedData.size() << ".\n";
+
+    CRYPT_DECRYPT_MESSAGE_PARA decryptParam;
+    memset(&decryptParam, 0, sizeof(decryptParam));
+    decryptParam.cbSize = sizeof(decryptParam);
+    decryptParam.dwMsgAndCertEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
+
+    // Create a temporary store to hold the certificate context
+    HCERTSTORE hCertStore = CertOpenStore(CERT_STORE_PROV_MEMORY, 0, NULL, CERT_STORE_CREATE_NEW_FLAG, NULL);
+    if (!hCertStore)
+    {
+        throw "Failed to create certificate store.";
+    }
+
+    // Add the certificate to the store
+    if (!CertAddCertificateContextToStore(hCertStore, cert, CERT_STORE_ADD_REPLACE_EXISTING, NULL))
+    {
+        throw "Failed to add certificate to store.";
+    }
+
+    decryptParam.cCertStore = 1;  // Specify we are using one certificate store
+    decryptParam.rghCertStore = &hCertStore;  // Pass the certificate store handle
+
+    DWORD decryptedDataSize = 0;
+
+    if (!CryptDecryptMessage(&decryptParam, &encryptedData[0], (DWORD)encryptedData.size(), NULL, &decryptedDataSize, NULL))
+    {
+        throw "First CryptDecryptMessage() failed.";
+    }
+
+    decryptedData.resize(decryptedDataSize);
+
+    if (!CryptDecryptMessage(&decryptParam, &encryptedData[0], (DWORD)encryptedData.size(), &decryptedData[0], &decryptedDataSize, NULL))
+    {
+        throw "Second CryptDecryptMessage() failed.";
+    }
+
+    decryptedData.resize(decryptedDataSize);
+
+    // Clean up the certificate store
+    CertCloseStore(hCertStore, CERT_CLOSE_STORE_FORCE_FLAG);
+
+    return decryptedData;
+}

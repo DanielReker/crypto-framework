@@ -112,17 +112,11 @@ std::vector<std::shared_ptr<ICertificate>> CryptoProCsp::GetCertificates() {
 }
 
 Blob CryptoProCsp::EncryptWithCertificate(const Blob& data, const CryptoProCertificate& cert) const {
-	std::cout << "CryptoPro encryption is not implemented\n";
-	std::cout << "Certificate subject: " << cert.GetSubjectName() << '\n';
-	std::cout << "Data: " << data << '\n';
-	return { 0x11, 0x22, 0x33 };
+    return EncryptData(cert.GetCertContext(), data);
 }
 
 Blob CryptoProCsp::DecryptWithCertificate(const Blob& encrypted_data, const CryptoProCertificate& cert) const {
-	std::cout << "CryptoPro decryption is not implemented\n";
-	std::cout << "Certificate subject: " << cert.GetSubjectName() << '\n';
-	std::cout << "Encrypted data: " << encrypted_data << '\n';
-	return { 0x11, 0x22, 0x33 };
+    return DecryptData(cert.GetCertContext(), encrypted_data);
 }
 
 Blob CryptoProCsp::SignCadesWithCertificate(const Blob& data, CadesType type, const CryptoProCertificate& cert, bool detached) const {

@@ -65,17 +65,11 @@ Blob VipNetCsp::SignCadesBes(PCCERT_CONTEXT cert, bool detached, const Blob& dat
 }
 
 Blob VipNetCsp::EncryptWithCertificate(const Blob& data, const VipNetCertificate& cert) const {
-	std::cout << "VipNet encryption is not implemented\n";
-	std::cout << "Certificate subject: " << cert.GetSubjectName() << '\n';
-	std::cout << "Data: " << data << '\n';
-	return { 0x11, 0x22, 0x33 };
+    return EncryptData(cert.GetCertContext(), data);
 }
 
 Blob VipNetCsp::DecryptWithCertificate(const Blob& encrypted_data, const VipNetCertificate& cert) const {
-	std::cout << "VipNet decryption is not implemented\n";
-	std::cout << "Certificate subject: " << cert.GetSubjectName() << '\n';
-	std::cout << "Encrypted data: " << encrypted_data << '\n';
-	return { 0x11, 0x22, 0x33 };
+    return DecryptData(cert.GetCertContext(), encrypted_data);
 }
 
 Blob VipNetCsp::SignCadesWithCertificate(const Blob& data, CadesType type, const VipNetCertificate& cert, bool detached) const {
