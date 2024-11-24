@@ -10,8 +10,6 @@
 #include <iostream>
 
 
-
-
 std::ostream& operator<<(std::ostream& out, const Blob& blob) {
 	for (auto byte : blob) {
 		out << std::hex << static_cast<int>(byte);
@@ -29,26 +27,27 @@ bool IsProviderCertificate(PCCERT_CONTEXT pCertContext, const std::string& targe
     DWORD dwProvNameSize = 0;
     if (!CertGetCertificateContextProperty(pCertContext, CERT_KEY_PROV_INFO_PROP_ID, NULL, &dwProvNameSize)) {
         return false;
-
-        CRYPT_KEY_PROV_INFO* pProvInfo = (CRYPT_KEY_PROV_INFO*)malloc(dwProvNameSize);
-        if (!pProvInfo) {
-            return false;
-        }
-
-        if (!CertGetCertificateContextProperty(pCertContext, CERT_KEY_PROV_INFO_PROP_ID, pProvInfo, &dwProvNameSize)) {
-            free(pProvInfo);
-            return false;
-        }
-
-        std::string providerName;
-        int len = WideCharToMultiByte(CP_UTF8, 0, pProvInfo->pwszProvName, -1, NULL, 0, NULL, NULL);
-        if (len > 0) {
-            providerName.resize(len - 1);
-            WideCharToMultiByte(CP_UTF8, 0, pProvInfo->pwszProvName, -1, &providerName[0], len, NULL, NULL);
-        }
-        free(pProvInfo);
-        return providerName.find(targetProvider) != std::string::npos;
     }
+
+    CRYPT_KEY_PROV_INFO* pProvInfo = (CRYPT_KEY_PROV_INFO*)malloc(dwProvNameSize);
+    if (!pProvInfo) {
+        return false;
+    }
+
+    if (!CertGetCertificateContextProperty(pCertContext, CERT_KEY_PROV_INFO_PROP_ID, pProvInfo, &dwProvNameSize)) {
+        free(pProvInfo);
+        return false;
+    }
+
+    std::string providerName;
+    int len = WideCharToMultiByte(CP_UTF8, 0, pProvInfo->pwszProvName, -1, NULL, 0, NULL, NULL);
+    if (len > 0) {
+        providerName.resize(len - 1);
+        WideCharToMultiByte(CP_UTF8, 0, pProvInfo->pwszProvName, -1, &providerName[0], len, NULL, NULL);
+    }
+    free(pProvInfo);
+
+    return providerName.find(targetProvider) != std::string::npos;
 }
 
 std::string GetCertificateSubject(PCCERT_CONTEXT pCertContext) {
