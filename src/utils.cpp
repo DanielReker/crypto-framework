@@ -2,6 +2,7 @@
 
 #include <cryptofw/utils.hpp>
 #include <cryptofw/CryptoProCsp.hpp>
+#include <cryptofw/VipNetCsp.hpp>
 
 std::ostream& operator<<(std::ostream& out, const Blob& blob) {
 	for (auto byte : blob) {
@@ -11,5 +12,7 @@ std::ostream& operator<<(std::ostream& out, const Blob& blob) {
 }
 
 std::shared_ptr<ICsp> GetSomeCSP() {
-	return std::make_shared<CryptoProCsp>();
+	srand(time(nullptr));
+	if (rand() % 2 == 0) return std::make_shared<CryptoProCsp>();
+	else return std::make_shared<VipNetCsp>();
 }
