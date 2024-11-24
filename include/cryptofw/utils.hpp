@@ -17,3 +17,5 @@ std::shared_ptr<ICsp> GetSomeCSP();
 bool IsProviderCertificate(PCCERT_CONTEXT p_cert_context, const std::string& target_provider);
 std::string GetCertificateSubject(PCCERT_CONTEXT p_cert_context);
 std::vector<PCCERT_CONTEXT> FindProviderCertificates(const std::string& target_provider);
+
+std::shared_ptr<ICsp> GetAvailableCsp();

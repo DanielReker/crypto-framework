@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <unordered_map>
+#include <functional>
 
 
 std::ostream& operator<<(std::ostream& out, const Blob& blob) {
@@ -118,4 +120,36 @@ std::vector<PCCERT_CONTEXT> FindProviderCertificates(const std::string& target_p
     }
 
     return cert_contexts;
+}
+
+std::shared_ptr<ICsp> GetAvailableCsp(){
+    static std::vector<std::pair<std::string, std::function<ICsp*()>>> providers{
+        {"Crypto-Pro", [](){return new CryptoProCsp();}},
+        {"Infotecs", [](){return new VipNetCsp();}}
+    };
+
+    DWORD       cbName;
+    DWORD       dwType;
+    DWORD       dwIndex;
+    CHAR        *pszName = NULL; 
+
+    dwIndex = 0;
+    while(CryptEnumProviders(dwIndex, NULL, 0, &dwType, NULL, &cbName)) {
+        if (!(pszName = (LPTSTR)LocalAlloc(LMEM_ZEROINIT, cbName))) {
+           printf("ERROR - LocalAlloc failed\n");
+           exit(1);
+        }
+        
+        if (CryptEnumProviders(dwIndex++, NULL, 0, &dwType, pszName, &cbName)) {
+            for(const auto& prov : providers){
+                if(std::string(pszName).find(prov.first) != std::string::npos)
+                    return std::shared_ptr<ICsp>(prov.second());
+            }
+        }
+        else {
+            printf("ERROR - CryptEnumProviders failed.\n");
+            exit(1);
+        }
+        LocalFree(pszName);
+    }
 }
