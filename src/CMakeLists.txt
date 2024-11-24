@@ -1,6 +1,7 @@
 file(GLOB HEADER_LIST CONFIGURE_DEPENDS "${ModernCMakeExample_SOURCE_DIR}/include/modern/*.hpp")
+file(GLOB SOURCE_LIST "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
-add_library(cryptofw ${HEADER_LIST} "CryptoProCsp.cpp" "CryptoProCertificate.cpp" "utils.cpp" "VipNetCsp.cpp" "VipNetCertificate.cpp")
+add_library(cryptofw ${HEADER_LIST} ${SOURCE_LIST})
 
 target_include_directories(cryptofw PUBLIC ../include)
 
