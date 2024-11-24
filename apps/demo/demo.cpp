@@ -27,7 +27,7 @@ void DemonstrateCsp(std::shared_ptr<ICsp> csp, const std::string& name) {
 
 		const auto& cert = certs[0];
 
-		const auto& cadesBesDetached = cert->SignCades(file, CadesType::kBes, true);
+		/*const auto& cadesBesDetached = cert->SignCades(file, CadesType::kBes, true);
 		SaveDataToFile(cadesBesDetached, name + "/cadesBesDetached.p7s");
 
 		const auto& cadesBesAttached = cert->SignCades(file, CadesType::kBes, false);
@@ -37,18 +37,18 @@ void DemonstrateCsp(std::shared_ptr<ICsp> csp, const std::string& name) {
 		SaveDataToFile(cadesXlDetached, name + "/cadesXlDetached.p7s");
 
 		const auto& cadesXlAttached = cert->SignCades(file, CadesType::kXLongType1, false);
-		SaveDataToFile(cadesXlAttached, name + "/cadesXlAttached.p7s");
+		SaveDataToFile(cadesXlAttached, name + "/cadesXlAttached.p7s");*/
 
 		const auto& encrypted = cert->Encrypt(file);
 		SaveDataToFile(encrypted, name + "/encrypted.p7e");
 
-		const auto& decrypted = cert->Decrypt(file);
+		const auto& decrypted = cert->Decrypt(encrypted);
 		SaveDataToFile(decrypted, name + "/decrypted.dat");
 
 		std::cout << "Encrypted: " << encrypted << '\n';
 		std::cout << "Decrypted: " << decrypted << '\n';
 
-		SaveDataToFile(cert->SignXades(file, XadesType::kBes), name + "/xadesBes.p7s");
+		//SaveDataToFile(cert->SignXades(file, XadesType::kBes), name + "/xadesBes.p7s");
 	}
 	catch (const std::exception& e) {
 		std::cout << "Exception during demonstration of " << name << ": " << e.what() << '\n';
@@ -62,6 +62,14 @@ int main(int argc, char* argv[]) {
 	
 	std::cout << "Hello from CryptoFramework demo app!\n";
 
-	DemonstrateCsp(GetCryptoProCsp(), "CryptoPro");
-	DemonstrateCsp(GetVipNetCsp(), "VipNet");
+	//DemonstrateCsp(GetCryptoProCsp(), "CryptoPro");
+	//DemonstrateCsp(GetVipNetCsp(), "VipNet");
+	Blob file = { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF };
+	auto csp1 = GetCryptoProCsp();
+	auto certs1 = csp1->GetCertificates();
+	auto csp2 = GetVipNetCsp();
+	auto certs2 = csp2->GetCertificates();
+	const auto& encrypted = certs2[0]->Encrypt(file);
+
+	const auto& decrypted = certs1[0]->Decrypt(encrypted);
 }

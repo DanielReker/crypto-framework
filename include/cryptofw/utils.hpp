@@ -29,3 +29,6 @@ std::vector<PCCERT_CONTEXT> FindProviderCertificates(const std::string& target_p
 const char* GetHashOid(PCCERT_CONTEXT p_cert);
 
 void SaveDataToFile(const Blob& data, const std::string& file_path);
+
+Blob EncryptData(PCCERT_CONTEXT cert, const Blob& sourceData);
+Blob DecryptData(PCCERT_CONTEXT cert, const Blob& encryptedData);
