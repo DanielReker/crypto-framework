@@ -5,12 +5,14 @@
 #include "cryptofw/utils.hpp"
 
 CryptoProCsp::CryptoProCsp() {
-	certificates_.push_back(std::make_shared<CryptoProCertificate>(*this, "Ivanov Ivan Ivanovich"));
-	certificates_.push_back(std::make_shared<CryptoProCertificate>(*this, "Petrov Petr Petrovich"));
 }
 
 std::vector<std::shared_ptr<ICertificate>> CryptoProCsp::GetCertificates() {
-	std::cout << "CryptoPro certificates list is not implemented\n";
+	auto certificatesContextList = FindProviderCertificates("Crypto-Pro");
+	for (auto context : certificatesContextList) {
+		std::string name = GetCertificateSubject(context);
+		certificates_.push_back(std::make_shared<CryptoProCertificate>(*this, GetCertificateSubject(context)));
+	}
 	return { certificates_.begin(), certificates_.end() };
 }
 
