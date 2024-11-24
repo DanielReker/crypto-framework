@@ -1,5 +1,5 @@
-file(GLOB HEADER_LIST CONFIGURE_DEPENDS "${ModernCMakeExample_SOURCE_DIR}/include/modern/*.hpp")
-file(GLOB SOURCE_LIST "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+file(GLOB HEADER_LIST CONFIGURE_DEPENDS "${CryptoFramework_SOURCE_DIR}/include/cryptofw/*.hpp")
+file(GLOB SOURCE_LIST CONFIGURE_DEPENDS "${CryptoFramework_SOURCE_DIR}/src/*.cpp")
 
 add_library(cryptofw ${HEADER_LIST} ${SOURCE_LIST})
 
