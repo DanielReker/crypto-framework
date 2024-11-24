@@ -2,8 +2,8 @@
 #include "cryptofw/VipNetCsp.hpp"
 
 
-VipNetCertificate::VipNetCertificate(const VipNetCsp& vip_net_csp, const std::string& subject_name) :
-	vip_net_csp_(vip_net_csp), subject_name_(subject_name) {
+VipNetCertificate::VipNetCertificate(const VipNetCsp& vip_net_csp, const std::string& subject_name, PCCERT_CONTEXT context) :
+	vip_net_csp_(vip_net_csp), subject_name_(subject_name), context_(context) {
 }
 
 Blob VipNetCertificate::Encrypt(const Blob& data) const {
@@ -32,5 +32,4 @@ bool VipNetCertificate::VerifyXades(const Blob& signature, XadesType type) const
 
 std::string VipNetCertificate::GetSubjectName() const {
 	return subject_name_;
-	;
 }

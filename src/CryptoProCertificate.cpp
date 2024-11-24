@@ -1,9 +1,10 @@
+
 #include "cryptofw/CryptoProCertificate.hpp"
 #include "cryptofw/CryptoProCsp.hpp"
 
 
-CryptoProCertificate::CryptoProCertificate(const CryptoProCsp& crypto_pro_csp, const std::string& subject_name) :
-	crypto_pro_csp_(crypto_pro_csp), subject_name_(subject_name) { }
+CryptoProCertificate::CryptoProCertificate(const CryptoProCsp& crypto_pro_csp, const std::string& subject_name, PCCERT_CONTEXT context) :
+	crypto_pro_csp_(crypto_pro_csp), subject_name_(subject_name), context_(context) { }
 
 Blob CryptoProCertificate::Encrypt(const Blob& data) const {
 	return crypto_pro_csp_.EncryptWithCertificate(data, *this);
@@ -31,4 +32,4 @@ bool CryptoProCertificate::VerifyXades(const Blob& signature, XadesType type) co
 
 std::string CryptoProCertificate::GetSubjectName() const {
 	return subject_name_;
-;}
+}

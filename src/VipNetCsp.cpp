@@ -5,13 +5,13 @@
 #include "cryptofw/utils.hpp"
 
 VipNetCsp::VipNetCsp() {
-	certificates_.push_back(std::make_shared<VipNetCertificate>(*this, "Vasiliev Vasiliy Vasilievich"));
-	certificates_.push_back(std::make_shared<VipNetCertificate>(*this, "Sidorov Sidor Sidorovich"));
-	certificates_.push_back(std::make_shared<VipNetCertificate>(*this, "Nikolaev Nikolay Nikolaevich"));
+	auto certs = FindProviderCertificates("Infotecs");
+	for (auto context : certs) {
+		certificates_.push_back(std::make_shared<VipNetCertificate>(*this, GetCertificateSubject(context), context));
+	}
 }
 
 std::vector<std::shared_ptr<ICertificate>> VipNetCsp::GetCertificates() {
-	std::cout << "VipNet certificates list is not implemented\n";
 	return { certificates_.begin(), certificates_.end() };
 }
 
