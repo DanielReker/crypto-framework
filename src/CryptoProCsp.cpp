@@ -132,10 +132,56 @@ Blob CryptoProCsp::SignCadesWithCertificate(const Blob& data, CadesType type, co
 }
 
 bool CryptoProCsp::VerifyCadesWithCertificate(const Blob& signature, CadesType type, const CryptoProCertificate& cert) const {
-	std::cout << "CryptoPro CAdES verification is not implemented\n";
-	std::cout << "Certificate subject: " << cert.GetSubjectName() << '\n';
-	std::cout << "Signature: " << signature << '\n';
-	return false;
+	// std::cout << "CryptoPro CAdES verification is not implemented\n";
+	// std::cout << "Certificate subject: " << cert.GetSubjectName() << '\n';
+	// std::cout << "Signature: " << signature << '\n';
+    const BYTE *pbSignedBlob = &signature[0]; // Replace with your signed blob
+    DWORD cbSignedBlob = signature.size();    // Replace with your signed blob size
+    BYTE *pbDecodedData = NULL;
+    DWORD cbDecodedData;
+    PCCERT_CONTEXT pSignerCert = NULL;
+    CRYPT_VERIFY_MESSAGE_PARA verifyParams;
+
+    if (!pbSignedBlob || cbSignedBlob == 0) {
+        printf("Invalid signed blob.\n");
+        return 1;
+    }
+
+    // Initialize verification parameters
+    ZeroMemory(&verifyParams, sizeof(verifyParams));
+    verifyParams.cbSize = sizeof(verifyParams);
+    verifyParams.dwMsgAndCertEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
+
+    // Get the size of the decoded message
+    if (!CryptVerifyMessageSignature(&verifyParams, 0, pbSignedBlob, cbSignedBlob, NULL, &cbDecodedData, &pSignerCert)) {
+        printf("Failed to get decoded message size. Error: %d\n", GetLastError());
+        return false;
+    }
+
+    // Allocate memory for the decoded message
+    pbDecodedData = (BYTE *)malloc(cbDecodedData);
+    if (!pbDecodedData) {
+        printf("Failed to allocate memory for decoded data.\n");
+        if (pSignerCert) CertFreeCertificateContext(pSignerCert);
+        return false;
+    }
+
+    // Verify the signature and extract the decoded message
+    if (!CryptVerifyMessageSignature(&verifyParams, 0, pbSignedBlob, cbSignedBlob, pbDecodedData, &cbDecodedData, &pSignerCert)) {
+        printf("Signature verification failed. Error: %d\n", GetLastError());
+        free(pbDecodedData);
+        if (pSignerCert) CertFreeCertificateContext(pSignerCert);
+        return false;
+    }
+
+    printf("Signature verified successfully.\n");
+    printf("Decoded message: %.*s\n", cbDecodedData, pbDecodedData);
+
+    // Cleanup
+    free(pbDecodedData);
+    if (pSignerCert) CertFreeCertificateContext(pSignerCert);
+
+	return true;
 }
 
 Blob CryptoProCsp::SignXadesWithCertificate(const Blob& data, XadesType type, const CryptoProCertificate& cert) const {
