@@ -1,45 +1,62 @@
 #include <iostream>
+#include <filesystem>
 
 #include "cryptofw/ICsp.hpp"
+#include "cryptofw/ICertificate.hpp"
 #include "cryptofw/Blob.hpp"
-#include <cryptofw/ICertificate.hpp>
 #include <cryptofw/utils.hpp>
-#include <cryptofw/CryptoProCsp.hpp>
-#include <cryptofw/VipnetCsp.hpp>
-#include <cryptofw/CryptoProCertificate.hpp>
+
+
+void DemonstrateCsp(std::shared_ptr<ICsp> csp, const std::string& name) {
+	try {
+		std::cout << "Demonstrating " << name << ":\n";
+
+		for (const auto& cert : csp->GetCertificates()) {
+			std::cout << name << " certificate, subject: " << cert->GetSubjectName() << '\n';
+		}
+
+		std::filesystem::create_directory(name);
+		Blob file = { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF };
+		SaveDataToFile(file, name + "/file.dat");
+
+		const auto& certs = csp->GetCertificates();
+		const auto& cert = certs[0];
+
+		const auto& cadesBesDetached = cert->SignCades(file, CadesType::kBes, true);
+		SaveDataToFile(cadesBesDetached, name + "/cadesBesDetached.p7s");
+
+		const auto& cadesBesAttached = cert->SignCades(file, CadesType::kBes, false);
+		SaveDataToFile(cadesBesAttached, name + "/cadesBesAttached.p7s");
+
+		const auto& cadesXlDetached = cert->SignCades(file, CadesType::kXLongType1, true);
+		SaveDataToFile(cadesXlDetached, name + "/cadesXlDetached.p7s");
+
+		const auto& cadesXlAttached = cert->SignCades(file, CadesType::kXLongType1, false);
+		SaveDataToFile(cadesXlAttached, name + "/cadesXlAttached.p7s");
+
+		const auto& encrypted = cert->Encrypt(file);
+		SaveDataToFile(encrypted, name + "/encrypted.p7e");
+
+		const auto& decrypted = cert->Decrypt(file);
+		SaveDataToFile(decrypted, name + "/decrypted.dat");
+
+		std::cout << "Encrypted: " << encrypted << '\n';
+		std::cout << "Decrypted: " << decrypted << '\n';
+
+		SaveDataToFile(cert->SignXades(file, XadesType::kBes), name + "/xadesBes.p7s");
+	}
+	catch (const std::exception& e) {
+		std::cout << "Exception during demonstration of " << name << ": " << e.what() << '\n';
+	}
+}
+
 
 int main(int argc, char* argv[]) {
 	srand(time(nullptr));
 	setlocale(LC_ALL, "rus");
 	
-	std::cout << "Hello from demo app\n";
+	std::cout << "Hello from CryptoFramework demo app!\n";
 
-	std::shared_ptr<VipNetCsp> csp1 = std::make_shared<VipNetCsp>();
-	for (const auto& cert : csp1->GetCertificates()) {
-		std::cout << "Vipnet certificate, subject: " << cert->GetSubjectName() << '\n';
-	}
-
-	std::shared_ptr<CryptoProCsp> csp2 = std::make_shared<CryptoProCsp>();
-	for (const auto& cert : csp2->GetCertificates()) {
-		std::cout << "CryptoPro certificate, subject: " << cert->GetSubjectName() << '\n';
-	}
-	std::cout << "END!";
-
-	auto certs = csp1->GetCertificates();
-	Blob data(10, 25);
-	auto res = certs[0]->SignCades(data, CadesType::kXLongType1, true);
-	std::cout << res.size();
-
-	return 0;
-	//auto certificates = csp->GetCertificates();
-
-	//const auto& cert = certificates[rand() % certificates.size()];
-
-	//const auto& encryptedData = cert->Encrypt({ 0xAA, 0xBB, 0xCC, 0xDD });
-	//std::cout << "Encrypted data: " << encryptedData << '\n';
-	//const auto& decryptedData = cert->Decrypt(encryptedData);
-	//std::cout << "Decrypted data: " << decryptedData << '\n';
-
-	//cert->VerifyCades(cert->SignCades({ 0xAA, 0xBB, 0xCC, 0xDD }, CadesType::kBes), CadesType::kBes);
-	//cert->VerifyXades(cert->SignXades({ 0xAA, 0xBB, 0xCC, 0xDD }, XadesType::kBes), XadesType::kBes);
+	DemonstrateCsp(GetCryptoProCsp(), "CryptoPro");
+	DemonstrateCsp(GetVipNetCsp(), "VipNet");
 }

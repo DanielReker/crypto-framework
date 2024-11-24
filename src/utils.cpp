@@ -1,13 +1,14 @@
 #include <memory>
+#include <string>
+#include <vector>
+#include <iostream>
 
 #include <cryptofw/utils.hpp>
 #include <cryptofw/CryptoProCsp.hpp>
 #include <cryptofw/VipNetCsp.hpp>
 #include <windows.h>
 #include <wincrypt.h>
-#include <string>
-#include <vector>
-#include <iostream>
+
 #include <cades.h>
 
 
@@ -18,10 +19,12 @@ std::ostream& operator<<(std::ostream& out, const Blob& blob) {
 	return out;
 }
 
-std::shared_ptr<ICsp> GetSomeCSP() {
-	srand(time(nullptr));
-	if (rand() % 2 == 0) return std::make_shared<CryptoProCsp>();
-	else return std::make_shared<VipNetCsp>();
+std::shared_ptr<ICsp> GetCryptoProCsp() {
+    return std::make_shared<CryptoProCsp>();
+}
+
+std::shared_ptr<ICsp> GetVipNetCsp() {
+    return std::make_shared<VipNetCsp>();
 }
 
 bool IsProviderCertificate(PCCERT_CONTEXT p_cert_context, const std::string& target_provider) {
@@ -142,4 +145,9 @@ const char* GetHashOid(PCCERT_CONTEXT p_cert) {
         return GOST_R3411_12_512;
     }
     return NULL;
+}
+
+void SaveDataToFile(const Blob& data, const std::string& file_path) {
+    std::ofstream outfile(file_path, std::ios::out | std::ios::binary);
+    outfile.write(reinterpret_cast<const char*>(&data[0]), data.size());
 }
