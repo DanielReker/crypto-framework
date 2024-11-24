@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
 	std::shared_ptr<ICsp> csp = csp1;
 
 	for (const auto& cert : csp->GetCertificates()) {
-		std::cout << "Имя субъекта сертифката: " <<cert->GetSubjectName() << '\n';
+		std::cout << "Subject " <<cert->GetSubjectName() << '\n';
 	}
 	std::cout << "END!";
 	return 0;
