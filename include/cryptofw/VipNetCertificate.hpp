@@ -1,4 +1,5 @@
 #pragma once
+
 #include <windows.h>
 #include <wincrypt.h>
 #include "cryptofw/ICertificate.hpp"
@@ -12,6 +13,7 @@ private:
     const VipNetCsp& vip_net_csp_;
     std::string subject_name_;
     PCCERT_CONTEXT context_;
+
 public:
     VipNetCertificate(const VipNetCsp& vip_net_csp, const std::string& subject_name, PCCERT_CONTEXT context);
     PCCERT_CONTEXT GetCertContext() const;

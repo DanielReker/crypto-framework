@@ -20,6 +20,11 @@ void DemonstrateCsp(std::shared_ptr<ICsp> csp, const std::string& name) {
 		SaveDataToFile(file, name + "/file.dat");
 
 		const auto& certs = csp->GetCertificates();
+		if (certs.size() == 0) {
+			std::cout << "No " << name << " certificates found\n";
+			return;
+		}
+
 		const auto& cert = certs[0];
 
 		const auto& cadesBesDetached = cert->SignCades(file, CadesType::kBes, true);

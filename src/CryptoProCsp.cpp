@@ -55,7 +55,7 @@ Blob CryptoProCsp::SignCadesBes(PCCERT_CONTEXT context, const Blob& data, bool d
 
     PCRYPT_DATA_BLOB pSignedMessage = 0;
     if (!CadesSignMessage(&para, detached, 1, pbToBeSigned, cbToBeSigned, &pSignedMessage)) {
-        throw "CadesSignMessage() failed";
+        throw std::runtime_error("CadesSignMessage() failed");
 
     }
     if (pChainContext)
@@ -65,7 +65,7 @@ Blob CryptoProCsp::SignCadesBes(PCCERT_CONTEXT context, const Blob& data, bool d
     copy(pSignedMessage->pbData, pSignedMessage->pbData + pSignedMessage->cbData, message.begin());
 
     if (!CadesFreeBlob(pSignedMessage)) {
-        throw "CadesFreeBlob() failed";
+        throw std::runtime_error("CadesFreeBlob() failed");
     }
     return message;
 }
@@ -94,14 +94,14 @@ Blob CryptoProCsp::SignCadesXLong1(PCCERT_CONTEXT context, const Blob& data, boo
 
 
     if (!CadesSignMessage(&para, detached, 1, pbToBeSigned, cbToBeSigned, &pSignedMessage)) {
-        throw "CadesSignMessage() failed";
+        throw std::runtime_error("CadesSignMessage() failed");
     }
 
     Blob message(pSignedMessage->cbData);
     copy(pSignedMessage->pbData, pSignedMessage->pbData + pSignedMessage->cbData, message.begin());
 
     if (!CadesFreeBlob(pSignedMessage)) {
-        throw "CadesFreeBlob() failed";
+        throw std::runtime_error("CadesFreeBlob() failed");
     }
 
     return message;

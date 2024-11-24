@@ -79,14 +79,12 @@ Blob VipNetCsp::DecryptWithCertificate(const Blob& encrypted_data, const VipNetC
 }
 
 Blob VipNetCsp::SignCadesWithCertificate(const Blob& data, CadesType type, const VipNetCertificate& cert, bool detached) const {
-    switch (type)
-    {
+    switch (type) {
     case CadesType::kBes:
         return SignCadesBes(cert.GetCertContext(), detached, data);
     default:
-        throw "Invalid type";
+        throw std::logic_error("Only CAdES BES is supported by ViPNet CSP");
     }
-	return { 0x11, 0x22, 0x33 };
 }
 
 bool VipNetCsp::VerifyCadesWithCertificate(const Blob& signature, CadesType type, const VipNetCertificate& cert) const {

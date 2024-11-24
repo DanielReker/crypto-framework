@@ -13,6 +13,7 @@ private:
     const CryptoProCsp& crypto_pro_csp_;
     std::string subject_name_;
     PCCERT_CONTEXT context_;
+
 public:
     CryptoProCertificate(const CryptoProCsp& crypto_pro_csp, const std::string& subject_name, PCCERT_CONTEXT context);
     PCCERT_CONTEXT GetCertContext() const;
