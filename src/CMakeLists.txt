@@ -1,6 +1,6 @@
 file(GLOB HEADER_LIST CONFIGURE_DEPENDS "${ModernCMakeExample_SOURCE_DIR}/include/modern/*.hpp")
 
-add_library(cryptofw "TestClass.cpp" ${HEADER_LIST})
+add_library(cryptofw ${HEADER_LIST} "CryptoProCsp.cpp" "CryptoProCertificate.cpp" "utils.cpp")
 
 target_include_directories(cryptofw PUBLIC ../include)
 
