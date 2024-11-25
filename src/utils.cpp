@@ -57,7 +57,7 @@ bool IsProviderCertificate(PCCERT_CONTEXT p_cert_context, const std::string& tar
 
 std::string GetCertificateSubject(PCCERT_CONTEXT p_cert_context) {
     if (!p_cert_context) {
-        return "";
+        throw std::runtime_error("Invlid certificate context");
     }
 
     DWORD dw_size = CertGetNameStringA(
@@ -69,8 +69,9 @@ std::string GetCertificateSubject(PCCERT_CONTEXT p_cert_context) {
         0
     );
 
+    // TODO: Refactor
     if (dw_size <= 1) {
-        return "";
+        throw std::runtime_error("Broken");
     }
 
     std::string subject_name(dw_size - 1, '\0');
@@ -89,10 +90,10 @@ std::string GetCertificateSubject(PCCERT_CONTEXT p_cert_context) {
 std::vector<PCCERT_CONTEXT> FindProviderCertificates(const std::string& target_provider) {
     std::vector<PCCERT_CONTEXT> cert_contexts;
 
+    // TODO: Check other stores
     HCERTSTORE h_store = CertOpenStore(CERT_STORE_PROV_SYSTEM, 0, NULL, CERT_SYSTEM_STORE_CURRENT_USER, L"MY");
     if (!h_store) {
-        std::cerr << "Fail" << std::endl;
-        return cert_contexts;
+        throw std::runtime_error("Fail to open certificates store");
     }
 
     PCCERT_CONTEXT p_cert_context = NULL;
@@ -115,9 +116,6 @@ std::vector<PCCERT_CONTEXT> FindProviderCertificates(const std::string& target_p
             PCCERT_CONTEXT p_dup_cert_context = CertDuplicateCertificateContext(p_cert_context);
             if (p_dup_cert_context) {
                 cert_contexts.push_back(p_dup_cert_context);
-            }
-            else {
-                std::cerr << "Fail to dup" << std::endl;
             }
         }
     }
@@ -153,111 +151,97 @@ void SaveDataToFile(const Blob& data, const std::string& file_path) {
     outfile.write(reinterpret_cast<const char*>(&data[0]), data.size());
 }
 
-Blob EncryptData(PCCERT_CONTEXT cert, const Blob& sourceData)
-{
-    Blob encryptedData;
-    // std::cout << "\nEncrypting data. Source data size = " << sourceData.size() << ".\n";
+Blob EncryptData(PCCERT_CONTEXT cert, const Blob& source_data) {
+    Blob encrypted_data;
 
-    CRYPT_ENCRYPT_MESSAGE_PARA encryptParam;
-    memset(&encryptParam, 0, sizeof(encryptParam));
-    encryptParam.cbSize = sizeof(encryptParam);
-    encryptParam.dwMsgEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
-    encryptParam.ContentEncryptionAlgorithm.pszObjId = (LPSTR)"1.2.643.2.2.21";
+    CRYPT_ENCRYPT_MESSAGE_PARA encrypt_param;
+    memset(&encrypt_param, 0, sizeof(encrypt_param));
+    encrypt_param.cbSize = sizeof(encrypt_param);
+    encrypt_param.dwMsgEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
+    encrypt_param.ContentEncryptionAlgorithm.pszObjId = (LPSTR)"1.2.643.2.2.21";
 
-    DWORD encryptedDataSize = 0;
+    DWORD encrypted_data_size = 0;
 
-    if (!CryptEncryptMessage(&encryptParam, 1, &cert, &sourceData[0], (DWORD)sourceData.size(), NULL,
-        &encryptedDataSize))
-    {
-        throw "First CryptEncryptMessage() call failed.";
+    if (!CryptEncryptMessage(&encrypt_param, 1, &cert, &source_data[0], (DWORD)source_data.size(), NULL,
+        &encrypted_data_size)) {
+        throw std::runtime_error("First CryptEncryptMessage() call failed.");
     }
 
-    encryptedData.resize(encryptedDataSize);
+    encrypted_data.resize(encrypted_data_size);
 
-    if (!CryptEncryptMessage(&encryptParam, 1, &cert, &sourceData[0], (DWORD)sourceData.size(), &encryptedData[0],
-        &encryptedDataSize))
-    {
-        throw "Second CryptEncryptMessage() call failed.";
+    if (!CryptEncryptMessage(&encrypt_param, 1, &cert, &source_data[0], (DWORD)source_data.size(), &encrypted_data[0],
+        &encrypted_data_size)) {
+        throw std::runtime_error("Second CryptEncryptMessage() call failed.");
     }
 
-    return encryptedData;
+    return encrypted_data;
 }
 
-Blob DecryptData(PCCERT_CONTEXT cert, const Blob& encryptedData)
+Blob DecryptData(PCCERT_CONTEXT cert, const Blob& encrypted_data)
 {
-    Blob decryptedData;
-    std::cout << "\nDecrypting data. Encrypted data size = " << encryptedData.size() << ".\n";
+    Blob decrypted_data;
 
-    CRYPT_DECRYPT_MESSAGE_PARA decryptParam;
-    memset(&decryptParam, 0, sizeof(decryptParam));
-    decryptParam.cbSize = sizeof(decryptParam);
-    decryptParam.dwMsgAndCertEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
+    CRYPT_DECRYPT_MESSAGE_PARA decrypt_param;
+    memset(&decrypt_param, 0, sizeof(decrypt_param));
+    decrypt_param.cbSize = sizeof(decrypt_param);
+    decrypt_param.dwMsgAndCertEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
 
-    // Create a temporary store to hold the certificate context
-    HCERTSTORE hCertStore = CertOpenStore(CERT_STORE_PROV_MEMORY, 0, NULL, CERT_STORE_CREATE_NEW_FLAG, NULL);
-    if (!hCertStore)
-    {
-        throw "Failed to create certificate store.";
+    HCERTSTORE h_cert_store = CertOpenStore(CERT_STORE_PROV_MEMORY, 0, NULL, CERT_STORE_CREATE_NEW_FLAG, NULL);
+    if (!h_cert_store) {
+        throw std::runtime_error("Failed to create certificate store.");
     }
 
-    // Add the certificate to the store
-    if (!CertAddCertificateContextToStore(hCertStore, cert, CERT_STORE_ADD_REPLACE_EXISTING, NULL))
-    {
-        throw "Failed to add certificate to store.";
+    if (!CertAddCertificateContextToStore(h_cert_store, cert, CERT_STORE_ADD_REPLACE_EXISTING, NULL)) {
+        throw std::runtime_error("Failed to add certificate to store.");
     }
 
-    decryptParam.cCertStore = 1;  // Specify we are using one certificate store
-    decryptParam.rghCertStore = &hCertStore;  // Pass the certificate store handle
+    decrypt_param.cCertStore = 1;
+    decrypt_param.rghCertStore = &h_cert_store;
 
-    DWORD decryptedDataSize = 0;
+    DWORD decrypted_data_size = 0;
 
-    if (!CryptDecryptMessage(&decryptParam, &encryptedData[0], (DWORD)encryptedData.size(), NULL, &decryptedDataSize, NULL))
-    {
-        throw "First CryptDecryptMessage() failed.";
+    if (!CryptDecryptMessage(&decrypt_param, &encrypted_data[0], (DWORD)encrypted_data.size(), NULL, &decrypted_data_size, NULL)) {
+        throw std::runtime_error("First CryptDecryptMessage() failed.");
     }
 
-    decryptedData.resize(decryptedDataSize);
+    decrypted_data.resize(decrypted_data_size);
 
-    if (!CryptDecryptMessage(&decryptParam, &encryptedData[0], (DWORD)encryptedData.size(), &decryptedData[0], &decryptedDataSize, NULL))
-    {
-        throw "Second CryptDecryptMessage() failed.";
+    if (!CryptDecryptMessage(&decrypt_param, &encrypted_data[0], (DWORD)encrypted_data.size(), &decrypted_data[0], &decrypted_data_size, NULL)) {
+        throw std::runtime_error("Second CryptDecryptMessage() failed.");
     }
 
-    decryptedData.resize(decryptedDataSize);
+    decrypted_data.resize(decrypted_data_size);
 
-    // Clean up the certificate store
-    CertCloseStore(hCertStore, CERT_CLOSE_STORE_FORCE_FLAG);
+    CertCloseStore(h_cert_store, CERT_CLOSE_STORE_FORCE_FLAG);
 
-    return decryptedData;
+    return decrypted_data;
 }
 
 std::shared_ptr<ICsp> GetAvailableCsp(){
-    static std::vector<std::pair<std::string, std::function<ICsp*()>>> providers{
-        {"Crypto-Pro", [](){return new CryptoProCsp();}},
-        {"Infotecs", [](){return new VipNetCsp();}}
+    static std::vector<std::pair<std::string, std::shared_ptr<ICsp>>> providers = {
+        {"Crypto-Pro", std::make_shared<CryptoProCsp>()},
+        {"Infotecs", std::make_shared<VipNetCsp>()}
     };
 
-    DWORD       cbName;
-    DWORD       dwType;
-    DWORD       dwIndex;
-    CHAR        *pszName = NULL; 
+    DWORD cb_name;
+    DWORD dw_type;
+    DWORD dw_index;
+    CHAR *pszName = NULL; 
 
-    dwIndex = 0;
-    while(CryptEnumProviders(dwIndex, NULL, 0, &dwType, NULL, &cbName)) {
-        if (!(pszName = (LPTSTR)LocalAlloc(LMEM_ZEROINIT, cbName))) {
-           printf("ERROR - LocalAlloc failed\n");
-           exit(1);
+    dw_index = 0;
+    while (CryptEnumProviders(dw_index, NULL, 0, &dw_type, NULL, &cb_name)) {
+        if (!(pszName = (LPTSTR)LocalAlloc(LMEM_ZEROINIT, cb_name))) {
+           throw std::runtime_error("LocalAlloc failed\n");
         }
         
-        if (CryptEnumProviders(dwIndex++, NULL, 0, &dwType, pszName, &cbName)) {
+        if (CryptEnumProviders(dw_index++, NULL, 0, &dw_type, pszName, &cb_name)) {
             for(const auto& prov : providers){
                 if(std::string(pszName).find(prov.first) != std::string::npos)
-                    return std::shared_ptr<ICsp>(prov.second());
+                    return prov.second;
             }
         }
         else {
-            printf("ERROR - CryptEnumProviders failed.\n");
-            exit(1);
+            throw std::runtime_error("CryptEnumProviders failed.\n");
         }
         LocalFree(pszName);
     }

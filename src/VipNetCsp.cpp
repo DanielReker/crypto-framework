@@ -17,7 +17,7 @@ std::vector<std::shared_ptr<ICertificate>> VipNetCsp::GetCertificates() {
 
 Blob VipNetCsp::SignCadesBes(PCCERT_CONTEXT cert, bool detached, const Blob& data) const {
     if (!cert) {
-        throw "Invalid parameter: cert is null.";
+        throw std::runtime_error("Invalid parameter: cert is null.");
     }
 
     CRYPT_SIGN_MESSAGE_PARA sign_param;
@@ -32,33 +32,33 @@ Blob VipNetCsp::SignCadesBes(PCCERT_CONTEXT cert, bool detached, const Blob& dat
     FILETIME ts;
     GetSystemTimeAsFileTime(&ts);
 
-    DWORD tsLen = 0;
-    if (!CryptEncodeObject(PKCS_7_ASN_ENCODING | X509_ASN_ENCODING, szOID_RSA_signingTime, &ts, NULL, &tsLen)) {
-        throw "First CryptEncodeObject() call failed.";
+    DWORD ts_len = 0;
+    if (!CryptEncodeObject(PKCS_7_ASN_ENCODING | X509_ASN_ENCODING, szOID_RSA_signingTime, &ts, NULL, &ts_len)) {
+        throw std::runtime_error("First CryptEncodeObject() call failed.");
     }
 
-    std::vector<uint8_t> tsBuf(tsLen);
-    if (!CryptEncodeObject(PKCS_7_ASN_ENCODING | X509_ASN_ENCODING, szOID_RSA_signingTime, &ts, tsBuf.data(), &tsLen)) {
-        throw "Second CryptEncodeObject() call failed.";
+    std::vector<uint8_t> ts_buf(ts_len);
+    if (!CryptEncodeObject(PKCS_7_ASN_ENCODING | X509_ASN_ENCODING, szOID_RSA_signingTime, &ts, ts_buf.data(), &ts_len)) {
+        throw std::runtime_error("Second CryptEncodeObject() call failed.");
     }
 
-    CRYPT_ATTR_BLOB tsBlob = { tsLen, tsBuf.data() };
-    CRYPT_ATTRIBUTE tsAttr = { const_cast<LPSTR>(szOID_RSA_signingTime), 1, &tsBlob };
+    CRYPT_ATTR_BLOB ts_blob = { ts_len, ts_buf.data() };
+    CRYPT_ATTRIBUTE ts_attr = { const_cast<LPSTR>(szOID_RSA_signingTime), 1, &ts_blob };
     sign_param.cAuthAttr = 1;
-    sign_param.rgAuthAttr = &tsAttr;
+    sign_param.rgAuthAttr = &ts_attr;
 
-    const BYTE* messagePtr = data.data();
-    DWORD messageSize = static_cast<DWORD>(data.size());
-    DWORD signSize = 0;
+    const BYTE* message_ptr = data.data();
+    DWORD message_size = static_cast<DWORD>(data.size());
+    DWORD sign_size = 0;
 
-    if (!CryptSignMessage(&sign_param, detached, 1, &messagePtr, &messageSize, NULL, &signSize)) {
-        throw "First CryptSignMessage() failed.";
+    if (!CryptSignMessage(&sign_param, detached, 1, &message_ptr, &message_size, NULL, &sign_size)) {
+        throw std::runtime_error("First CryptSignMessage() failed.");
     }
 
-    std::vector<uint8_t> signature(signSize);
+    std::vector<uint8_t> signature(sign_size);
 
-    if (!CryptSignMessage(&sign_param, detached, 1, &messagePtr, &messageSize, signature.data(), &signSize)) {
-        throw "Second CryptSignMessage() failed.";
+    if (!CryptSignMessage(&sign_param, detached, 1, &message_ptr, &message_size, signature.data(), &sign_size)) {
+        throw std::runtime_error("Second CryptSignMessage() failed.");
     }
 
     return signature;
