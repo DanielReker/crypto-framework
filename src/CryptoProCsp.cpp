@@ -129,10 +129,8 @@ Blob CryptoProCsp::SignCadesWithCertificate(const Blob& data, CadesType type, co
     }
 }
 
-bool CryptoProCsp::VerifyCadesWithCertificate(const Blob& signature, CadesType type, const CryptoProCertificate& cert) const {
+bool CryptoProCsp::VerifyCades(const Blob& signature, CadesType type) const {
 	std::cout << "CryptoPro CAdES verification is not implemented\n";
-	std::cout << "Certificate subject: " << cert.GetSubjectName() << '\n';
-	std::cout << "Signature: " << signature << '\n';
 	return false;
 }
 
@@ -143,9 +141,7 @@ Blob CryptoProCsp::SignXadesWithCertificate(const Blob& data, XadesType type, co
 	return { 0x11, 0x22, 0x33 };
 }
 
-bool CryptoProCsp::VerifyXadesWithCertificate(const Blob& signature, XadesType type, const CryptoProCertificate& cert) const {
+bool CryptoProCsp::VerifyXades(const Blob& signature, XadesType type) const {
 	std::cout << "CryptoPro XAdES verification is not implemented\n";
-	std::cout << "Certificate subject: " << cert.GetSubjectName() << '\n';
-	std::cout << "Signature: " << signature << '\n';
 	return false;
 }

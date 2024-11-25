@@ -81,10 +81,8 @@ Blob VipNetCsp::SignCadesWithCertificate(const Blob& data, CadesType type, const
     }
 }
 
-bool VipNetCsp::VerifyCadesWithCertificate(const Blob& signature, CadesType type, const VipNetCertificate& cert) const {
+bool VipNetCsp::VerifyCades(const Blob& signature, CadesType type) const {
 	std::cout << "VipNet CAdES verification is not implemented\n";
-	std::cout << "Certificate subject: " << cert.GetSubjectName() << '\n';
-	std::cout << "Signature: " << signature << '\n';
 	return false;
 }
 
@@ -95,9 +93,7 @@ Blob VipNetCsp::SignXadesWithCertificate(const Blob& data, XadesType type, const
 	return { 0x11, 0x22, 0x33 };
 }
 
-bool VipNetCsp::VerifyXadesWithCertificate(const Blob& signature, XadesType type, const VipNetCertificate& cert) const {
+bool VipNetCsp::VerifyXades(const Blob& signature, XadesType type) const {
 	std::cout << "VipNet XAdES verification is not implemented\n";
-	std::cout << "Certificate subject: " << cert.GetSubjectName() << '\n';
-	std::cout << "Signature: " << signature << '\n';
 	return false;
 }
