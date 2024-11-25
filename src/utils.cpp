@@ -246,3 +246,43 @@ std::shared_ptr<ICsp> GetAvailableCsp(){
         LocalFree(pszName);
     }
 }
+
+bool VerifyCadesBes(const Blob& signature) {
+    const BYTE* pbSignedBlob = &signature[0];
+    DWORD cbSignedBlob = signature.size();
+    BYTE* pbDecodedData = NULL;
+    DWORD cbDecodedData;
+    PCCERT_CONTEXT pSignerCert = NULL;
+    CRYPT_VERIFY_MESSAGE_PARA verifyParams;
+
+    if (!pbSignedBlob || cbSignedBlob == 0) {
+        throw std::invalid_argument("Invalid signature");
+    }
+
+    ZeroMemory(&verifyParams, sizeof(verifyParams));
+    verifyParams.cbSize = sizeof(verifyParams);
+    verifyParams.dwMsgAndCertEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
+
+    if (!CryptVerifyMessageSignature(&verifyParams, 0, pbSignedBlob, cbSignedBlob, NULL, &cbDecodedData, &pSignerCert)) {
+        //throw std::runtime_error("Failed to get decoded message size");
+        return false;
+    }
+
+    pbDecodedData = (BYTE*)malloc(cbDecodedData);
+    if (!pbDecodedData) {
+        if (pSignerCert) CertFreeCertificateContext(pSignerCert);
+        throw std::runtime_error("Failed to allocate memory for decoded data");
+    }
+
+    if (!CryptVerifyMessageSignature(&verifyParams, 0, pbSignedBlob, cbSignedBlob, pbDecodedData, &cbDecodedData, &pSignerCert)) {
+        free(pbDecodedData);
+        if (pSignerCert) CertFreeCertificateContext(pSignerCert);
+        //throw std::runtime_error("Signature verification failed");
+        return false;
+    }
+
+    free(pbDecodedData);
+    if (pSignerCert) CertFreeCertificateContext(pSignerCert);
+
+    return true;
+}

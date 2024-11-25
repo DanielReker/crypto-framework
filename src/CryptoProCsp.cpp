@@ -130,8 +130,11 @@ Blob CryptoProCsp::SignCadesWithCertificate(const Blob& data, CadesType type, co
 }
 
 bool CryptoProCsp::VerifyCades(const Blob& signature, CadesType type) const {
-	std::cout << "CryptoPro CAdES verification is not implemented\n";
-	return false;
+    if (type != CadesType::kBes) {
+        std::cout << "CryptoPro CAdES verification is not implemented\n";
+        return false;
+    }
+    else return VerifyCadesBes(signature);
 }
 
 Blob CryptoProCsp::SignXadesWithCertificate(const Blob& data, XadesType type, const CryptoProCertificate& cert) const {

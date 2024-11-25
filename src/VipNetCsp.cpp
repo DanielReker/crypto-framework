@@ -82,8 +82,10 @@ Blob VipNetCsp::SignCadesWithCertificate(const Blob& data, CadesType type, const
 }
 
 bool VipNetCsp::VerifyCades(const Blob& signature, CadesType type) const {
-	std::cout << "VipNet CAdES verification is not implemented\n";
-	return false;
+    if (type != CadesType::kBes) {
+        throw std::logic_error("ViPNet CSP only supports CAdES BES signatures");
+    }
+    else return VerifyCadesBes(signature);
 }
 
 Blob VipNetCsp::SignXadesWithCertificate(const Blob& data, XadesType type, const VipNetCertificate& cert) const {
