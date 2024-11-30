@@ -418,3 +418,5 @@ CMakeUserPresets.json
 out
 
 .vscode
+
+python/swig_generated
