@@ -19,3 +19,4 @@ find_package(CryptoPro COMPONENTS cades xades)
 
 add_subdirectory(src)
 add_subdirectory(apps/demo)
+add_subdirectory(python)
