@@ -130,16 +130,16 @@ const char* GetHashOid(PCCERT_CONTEXT p_cert) {
     const char* GOST_R3411 = "1.2.643.2.2.9";
     const char* GOST_R3411_12_256 = "1.2.643.7.1.1.2.2";
     const char* GOST_R3411_12_512 = "1.2.643.7.1.1.2.3";
-    const char* pKeyAlg = p_cert->pCertInfo->SubjectPublicKeyInfo.Algorithm.pszObjId;
-    if (strcmp(pKeyAlg, GOST_R3410EL) == 0)
+    const char* p_key_alg = p_cert->pCertInfo->SubjectPublicKeyInfo.Algorithm.pszObjId;
+    if (strcmp(p_key_alg, GOST_R3410EL) == 0)
     {
         return GOST_R3411;
     }
-    else if (strcmp(pKeyAlg, GOST_R3410_12_256) == 0)
+    else if (strcmp(p_key_alg, GOST_R3410_12_256) == 0)
     {
         return GOST_R3411_12_256;
     }
-    else if (strcmp(pKeyAlg, GOST_R3410_12_512) == 0)
+    else if (strcmp(p_key_alg, GOST_R3410_12_512) == 0)
     {
         return GOST_R3411_12_512;
     }
@@ -245,44 +245,4 @@ std::shared_ptr<ICsp> GetAvailableCsp(){
         }
         LocalFree(pszName);
     }
-}
-
-bool VerifyCadesBes(const Blob& signature) {
-    const BYTE* pbSignedBlob = &signature[0];
-    DWORD cbSignedBlob = signature.size();
-    BYTE* pbDecodedData = NULL;
-    DWORD cbDecodedData;
-    PCCERT_CONTEXT pSignerCert = NULL;
-    CRYPT_VERIFY_MESSAGE_PARA verifyParams;
-
-    if (!pbSignedBlob || cbSignedBlob == 0) {
-        throw std::invalid_argument("Invalid signature");
-    }
-
-    ZeroMemory(&verifyParams, sizeof(verifyParams));
-    verifyParams.cbSize = sizeof(verifyParams);
-    verifyParams.dwMsgAndCertEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
-
-    if (!CryptVerifyMessageSignature(&verifyParams, 0, pbSignedBlob, cbSignedBlob, NULL, &cbDecodedData, &pSignerCert)) {
-        //throw std::runtime_error("Failed to get decoded message size");
-        return false;
-    }
-
-    pbDecodedData = (BYTE*)malloc(cbDecodedData);
-    if (!pbDecodedData) {
-        if (pSignerCert) CertFreeCertificateContext(pSignerCert);
-        throw std::runtime_error("Failed to allocate memory for decoded data");
-    }
-
-    if (!CryptVerifyMessageSignature(&verifyParams, 0, pbSignedBlob, cbSignedBlob, pbDecodedData, &cbDecodedData, &pSignerCert)) {
-        free(pbDecodedData);
-        if (pSignerCert) CertFreeCertificateContext(pSignerCert);
-        //throw std::runtime_error("Signature verification failed");
-        return false;
-    }
-
-    free(pbDecodedData);
-    if (pSignerCert) CertFreeCertificateContext(pSignerCert);
-
-    return true;
 }

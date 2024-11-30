@@ -69,7 +69,6 @@ Blob CryptoProCsp::SignCadesBes(PCCERT_CONTEXT context, const Blob& data, bool d
     return message;
 }
 
-
 Blob CryptoProCsp::SignCadesXLong1(PCCERT_CONTEXT context, const Blob& data, bool detached) const {
     CRYPT_SIGN_MESSAGE_PARA sign_param = { sizeof(sign_param) };
     sign_param.dwMsgEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
@@ -129,12 +128,137 @@ Blob CryptoProCsp::SignCadesWithCertificate(const Blob& data, CadesType type, co
     }
 }
 
-bool CryptoProCsp::VerifyCades(const Blob& signature, CadesType type) const {
-    if (type != CadesType::kBes) {
-        std::cout << "CryptoPro CAdES verification is not implemented\n";
+bool CryptoProCsp::VerifyCadesXLong1Attached(const Blob& signature) const {
+    CRYPT_VERIFY_MESSAGE_PARA crypt_verify_params = { sizeof(crypt_verify_params) };
+    crypt_verify_params.dwMsgAndCertEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
+
+    CADES_VERIFICATION_PARA cades_verify_params = { sizeof(cades_verify_params) };
+    cades_verify_params.dwCadesType = CADES_X_LONG_TYPE_1;
+
+    CADES_VERIFY_MESSAGE_PARA verify_params = { sizeof(verify_params) };
+    verify_params.pVerifyMessagePara = &crypt_verify_params;
+    verify_params.pCadesVerifyPara = &cades_verify_params;
+
+    PCADES_VERIFICATION_INFO p_verify_info_attached = 0;
+    PCRYPT_DATA_BLOB p_content = 0;
+    if (!CadesVerifyMessage(&verify_params, 0, &signature[0], (unsigned long)signature.size(), &p_content, &p_verify_info_attached)) {
         return false;
     }
-    else return VerifyCadesBes(signature);
+
+    bool result = (p_verify_info_attached->dwStatus == CADES_VERIFY_SUCCESS);
+    if (!CadesFreeVerificationInfo(p_verify_info_attached)) {
+        throw std::runtime_error("Failed to free verification info");
+    }
+    if (!CadesFreeBlob(p_content)) {
+        throw std::runtime_error("Failed to free blob");
+    }
+    return result;
+}
+
+bool CryptoProCsp::VerifyCadesXLong1Detached(const Blob& signature, const Blob& message) const {
+    CRYPT_VERIFY_MESSAGE_PARA crypt_verify_params = { sizeof(crypt_verify_params) };
+    crypt_verify_params.dwMsgAndCertEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
+
+    CADES_VERIFICATION_PARA cades_verify_params = { sizeof(cades_verify_params) };
+    cades_verify_params.dwCadesType = CADES_X_LONG_TYPE_1;
+
+    CADES_VERIFY_MESSAGE_PARA verify_params = { sizeof(verify_params) };
+    verify_params.pVerifyMessagePara = &crypt_verify_params;
+    verify_params.pCadesVerifyPara = &cades_verify_params;
+
+    const BYTE* message_ptr = &message[0];
+    DWORD message_size = (DWORD)message.size();
+
+    PCADES_VERIFICATION_INFO p_verify_info_detached = 0;
+    PCRYPT_DATA_BLOB p_content = 0;
+    if (!CadesVerifyDetachedMessage(&verify_params, 0, &signature[0], (unsigned long)signature.size(), 1,
+        &message_ptr, &message_size, &p_verify_info_detached)) {
+        return false;
+    }
+
+    bool result = (p_verify_info_detached->dwStatus == CADES_VERIFY_SUCCESS);
+    if (!CadesFreeVerificationInfo(p_verify_info_detached)) {
+        throw std::runtime_error("Failed to free verification info");
+    }
+    return result;
+}
+bool CryptoProCsp::VerifyCadesBesAttached(const Blob& signature) const {
+    CRYPT_VERIFY_MESSAGE_PARA crypt_verify_params = { sizeof(crypt_verify_params) };
+    crypt_verify_params.dwMsgAndCertEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
+
+    CADES_VERIFICATION_PARA cades_verify_params = { sizeof(cades_verify_params) };
+    cades_verify_params.dwCadesType = CADES_BES;
+
+    CADES_VERIFY_MESSAGE_PARA verify_para = { sizeof(verify_para) };
+    verify_para.pVerifyMessagePara = &crypt_verify_params;
+    verify_para.pCadesVerifyPara = &cades_verify_params;
+
+    PCADES_VERIFICATION_INFO p_verify_info_attached = 0;
+    PCRYPT_DATA_BLOB p_content = 0;
+    if (!CadesVerifyMessage(&verify_para, 0, &signature[0], (unsigned long)signature.size(), &p_content, &p_verify_info_attached)) {
+        return false;
+    }
+
+    bool result = (p_verify_info_attached->dwStatus == CADES_VERIFY_SUCCESS);
+    if (!CadesFreeVerificationInfo(p_verify_info_attached)) {
+        CadesFreeBlob(p_content);
+    }
+    if (!CadesFreeBlob(p_content)) {
+        throw std::runtime_error("Fail to free blob");
+    }
+    return result;
+}
+
+bool CryptoProCsp::VerifyCadesBesDetached(const Blob& signature, const Blob& message) const {
+    CRYPT_VERIFY_MESSAGE_PARA crypt_verify_params = { sizeof(crypt_verify_params) };
+    crypt_verify_params.dwMsgAndCertEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
+
+    CADES_VERIFICATION_PARA cades_verify_params = { sizeof(cades_verify_params) };
+    cades_verify_params.dwCadesType = CADES_BES;
+
+    CADES_VERIFY_MESSAGE_PARA verify_para = { sizeof(verify_para) };
+    verify_para.pVerifyMessagePara = &crypt_verify_params;
+    verify_para.pCadesVerifyPara = &cades_verify_params;
+
+    const BYTE* message_ptr = &message[0];
+    DWORD message_size = (DWORD)message.size();
+
+    PCADES_VERIFICATION_INFO p_verify_info_detached = 0;
+    PCRYPT_DATA_BLOB p_content = 0;
+    if (!CadesVerifyDetachedMessage(&verify_para, 0, &signature[0], (unsigned long)signature.size(), 1,
+        &message_ptr, &message_size, &p_verify_info_detached)) {
+        return false;
+    }
+
+    bool result = (p_verify_info_detached->dwStatus == CADES_VERIFY_SUCCESS);
+    if (!CadesFreeVerificationInfo(p_verify_info_detached)) {
+        throw std::runtime_error("Failed to free verification info");
+    }
+    return result;
+}
+
+
+
+bool CryptoProCsp::VerifyCadesAttached(const Blob& signature, CadesType type) const {
+    switch (type) {
+    case CadesType::kXLongType1:
+        return VerifyCadesXLong1Attached(signature);
+    case CadesType::kBes:
+        return VerifyCadesBesAttached(signature);
+    default:
+        throw std::runtime_error("Invalid signature type");
+    }
+}
+
+bool CryptoProCsp::VerifyCadesDetached(const Blob& signature, const Blob& source, CadesType type) const {
+    switch (type) {
+    case CadesType::kXLongType1:
+        return VerifyCadesXLong1Detached(signature, source);
+    case CadesType::kBes:
+        return VerifyCadesBesDetached(signature, source);
+    default:
+        throw std::runtime_error("Invalid signature type");
+    }
 }
 
 Blob CryptoProCsp::SignXadesWithCertificate(const Blob& data, XadesType type, const CryptoProCertificate& cert) const {

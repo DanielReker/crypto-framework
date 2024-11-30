@@ -81,11 +81,72 @@ Blob VipNetCsp::SignCadesWithCertificate(const Blob& data, CadesType type, const
     }
 }
 
-bool VipNetCsp::VerifyCades(const Blob& signature, CadesType type) const {
-    if (type != CadesType::kBes) {
-        throw std::logic_error("ViPNet CSP only supports CAdES BES signatures");
+bool VipNetCsp::VerifyDetachedSignVipnet(const Blob& signature, const Blob& message) const {
+    CRYPT_VERIFY_MESSAGE_PARA verify_params;
+    memset(&verify_params, 0, sizeof(verify_params));
+    verify_params.cbSize = sizeof(verify_params);
+    verify_params.dwMsgAndCertEncodingType = PKCS_7_ASN_ENCODING | X509_ASN_ENCODING;
+
+    const BYTE* message_ptr = &message[0];
+    DWORD message_size = (DWORD)message.size();
+    PCCERT_CONTEXT cert = NULL;
+
+    if (!CryptVerifyDetachedMessageSignature(&verify_params, 0, &signature[0], (DWORD)signature.size(),
+        1, &message_ptr, &message_size, &cert)) {
+        return false;
     }
-    else return VerifyCadesBes(signature);
+
+    char cert_name[512] = { 0 };
+    if (!CertNameToStr(X509_ASN_ENCODING, &cert->pCertInfo->Subject, CERT_SIMPLE_NAME_STR, cert_name,
+        sizeof(cert_name))) {
+        return false;
+    }
+
+    CertFreeCertificateContext(cert);
+    return true;
+}
+bool VipNetCsp::VerifyAttachedSignVipnet(const Blob& signature) const {
+    std::vector<BYTE> message;
+    CRYPT_VERIFY_MESSAGE_PARA verify_param;
+    memset(&verify_param, 0, sizeof(verify_param));
+    verify_param.cbSize = sizeof(verify_param);
+    verify_param.dwMsgAndCertEncodingType = PKCS_7_ASN_ENCODING | X509_ASN_ENCODING;
+
+    DWORD message_size = 0;
+    if (!CryptVerifyMessageSignature(&verify_param, 0, &signature[0], (DWORD)signature.size(), NULL, &message_size,
+        NULL)) {
+        return false;
+    }
+
+    PCCERT_CONTEXT cert = NULL;
+    message.resize(message_size);
+    if (!CryptVerifyMessageSignature(&verify_param, 0, &signature[0], (DWORD)signature.size(), &message[0],
+        &message_size, &cert)) {
+        return false;
+    }
+
+    char cert_name[512] = { 0 };
+    if (!CertNameToStr(X509_ASN_ENCODING, &cert->pCertInfo->Subject, CERT_SIMPLE_NAME_STR, cert_name,
+        sizeof(cert_name))) {
+        return false;
+    }
+
+    CertFreeCertificateContext(cert);
+
+    return true;
+}
+bool VipNetCsp::VerifyCadesAttached(const Blob& signature, CadesType type) const {
+    if (type != CadesType::kBes) {
+        throw std::logic_error("VipNet CSP only supports CAdES BES signatures");
+    }
+    else return VerifyAttachedSignVipnet(signature);
+}
+
+bool VipNetCsp::VerifyCadesDetached(const Blob& signature, const Blob& source, CadesType type) const {
+    if (type != CadesType::kBes) {
+        throw std::logic_error("VipNet CSP only supports CAdES BES signatures");
+    }
+    else return VerifyDetachedSignVipnet(signature, source);
 }
 
 Blob VipNetCsp::SignXadesWithCertificate(const Blob& data, XadesType type, const VipNetCertificate& cert) const {

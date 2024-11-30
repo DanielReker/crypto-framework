@@ -16,6 +16,9 @@ private:
     std::vector<std::shared_ptr<VipNetCertificate>> certificates_;
     Blob SignCadesBes (PCCERT_CONTEXT cert, bool detached, const Blob& data) const;
 
+    bool VerifyAttachedSignVipnet(const Blob& signature)const;
+    bool VerifyDetachedSignVipnet(const Blob& signature, const Blob& message) const;
+
 public:
     VipNetCsp();
 
@@ -26,7 +29,9 @@ public:
     Blob DecryptWithCertificate(const Blob& encrypted_data, const VipNetCertificate& cert) const;
 
     Blob SignCadesWithCertificate(const Blob& data, CadesType type, const VipNetCertificate& cert, bool detached) const;
-    bool VerifyCades(const Blob& signature, CadesType type) const override;
+
+    bool VerifyCadesAttached(const Blob& signature, CadesType type) const override;
+    bool VerifyCadesDetached(const Blob& signature, const Blob& source, CadesType type) const override;
 
     Blob SignXadesWithCertificate(const Blob& data, XadesType type, const VipNetCertificate& cert) const;
     bool VerifyXades(const Blob& signature, XadesType type) const override;
