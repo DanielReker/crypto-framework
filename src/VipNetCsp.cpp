@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "cryptofw/VipNetCsp.hpp"
-#include "cryptofw/VipNetCertificate.hpp"
-#include "cryptofw/utils.hpp"
+#include "VipNetCsp.hpp"
+#include "VipNetCertificate.hpp"
+#include "private_utils.hpp"
 
 VipNetCsp::VipNetCsp() {
 	auto certs = FindProviderCertificates("Infotecs");
@@ -150,13 +150,9 @@ bool VipNetCsp::VerifyCadesDetached(const Blob& signature, const Blob& source, C
 }
 
 Blob VipNetCsp::SignXadesWithCertificate(const Blob& data, XadesType type, const VipNetCertificate& cert) const {
-	std::cout << "VipNet XAdES signing is not implemented\n";
-	std::cout << "Certificate subject: " << cert.GetSubjectName() << '\n';
-	std::cout << "Data: " << data << '\n';
-	return { 0x11, 0x22, 0x33 };
+    throw std::logic_error("VipNet XAdES signing is not implemented yet");
 }
 
 bool VipNetCsp::VerifyXades(const Blob& signature, XadesType type) const {
-	std::cout << "VipNet XAdES verification is not implemented\n";
-	return false;
+    throw std::logic_error("VipNet XAdES verification is not implemented yet");
 }

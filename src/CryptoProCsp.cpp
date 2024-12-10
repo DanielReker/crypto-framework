@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cades.h>
-#include "cryptofw/CryptoProCsp.hpp"
-#include "cryptofw/CryptoProCertificate.hpp"
-#include "cryptofw/utils.hpp"
+#include "CryptoProCsp.hpp"
+#include "CryptoProCertificate.hpp"
+#include "private_utils.hpp"
 
 CryptoProCsp::CryptoProCsp() {
 	auto certs = FindProviderCertificates("Crypto-Pro");
@@ -262,13 +262,9 @@ bool CryptoProCsp::VerifyCadesDetached(const Blob& signature, const Blob& source
 }
 
 Blob CryptoProCsp::SignXadesWithCertificate(const Blob& data, XadesType type, const CryptoProCertificate& cert) const {
-	std::cout << "CryptoPro XAdES signing is not implemented\n";
-	std::cout << "Certificate subject: " << cert.GetSubjectName() << '\n';
-	std::cout << "Data: " << data << '\n';
-	return { 0x11, 0x22, 0x33 };
+    throw std::logic_error("CryptoPro XAdES signing is not implemented yet");
 }
 
 bool CryptoProCsp::VerifyXades(const Blob& signature, XadesType type) const {
-	std::cout << "CryptoPro XAdES verification is not implemented\n";
-	return false;
+    throw std::logic_error("CryptoPro XAdES verification is not implemented yet");
 }

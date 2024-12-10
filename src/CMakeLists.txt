@@ -2,7 +2,7 @@ file(GLOB PUBLIC_HEADER_LIST CONFIGURE_DEPENDS "${CryptoFramework_SOURCE_DIR}/in
 file(GLOB PRIVATE_HEADER_LIST CONFIGURE_DEPENDS "${CryptoFramework_SOURCE_DIR}/src/include/*.hpp")
 file(GLOB SOURCE_LIST CONFIGURE_DEPENDS "${CryptoFramework_SOURCE_DIR}/src/*.cpp")
 
-add_library(cryptofw ${PUBLIC_HEADER_LIST} ${PRIVATE_HEADER_LIST} ${SOURCE_LIST})
+add_library(cryptofw ${PUBLIC_HEADER_LIST} ${PRIVATE_HEADER_LIST} ${SOURCE_LIST} "Utils.cpp")
 
 target_include_directories(cryptofw PUBLIC "../include")
 target_include_directories(cryptofw PRIVATE "./include")

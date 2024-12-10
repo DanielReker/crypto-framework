@@ -1,6 +1,6 @@
 
-#include "cryptofw/CryptoProCertificate.hpp"
-#include "cryptofw/CryptoProCsp.hpp"
+#include "CryptoProCertificate.hpp"
+#include "CryptoProCsp.hpp"
 
 
 CryptoProCertificate::CryptoProCertificate(const CryptoProCsp& crypto_pro_csp, const std::string& subject_name, PCCERT_CONTEXT context) :

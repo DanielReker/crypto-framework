@@ -1,5 +1,5 @@
-#include "cryptofw/VipNetCertificate.hpp"
-#include "cryptofw/VipNetCsp.hpp"
+#include "VipNetCertificate.hpp"
+#include "VipNetCsp.hpp"
 
 
 VipNetCertificate::VipNetCertificate(const VipNetCsp& vip_net_csp, const std::string& subject_name, PCCERT_CONTEXT context) :
