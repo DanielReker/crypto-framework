@@ -59,9 +59,7 @@ if(CryptoPro_FOUND)
             INTERFACE_INCLUDE_DIRECTORIES "${CryptoPro_INCLUDE_DIR}"
             IMPORTED_IMPLIB "${CryptoPro_${component}_LIBRARY}"
       )
-      if(MSVC)
-        target_link_libraries(CryptoPro::${component} INTERFACE crypt32)
-      endif()
+      target_link_libraries(CryptoPro::${component} INTERFACE crypt32)
     endif()
   endforeach()
 endif()
