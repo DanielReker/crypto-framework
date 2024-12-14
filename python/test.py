@@ -1,8 +1,8 @@
 from swig_generated import cryptofw
 
-csp = cryptofw.VipNetCsp()
+csp = cryptofw.GetVipNetCsp()
 certs = csp.GetCertificates()
-cert = csp.get_certificate(0)
+cert = certs[0]
 for i, k in enumerate(certs):
     print("Cert " +str(i)+": ", k.GetSubjectName())
 
