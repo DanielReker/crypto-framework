@@ -1,29 +1,25 @@
 from swig_generated import cryptofw
 
-csp = cryptofw.GetVipNetCsp()
+csp = cryptofw.Utils.GetVipNetCsp()
 certs = csp.GetCertificates()
 cert = certs[0]
 for i, k in enumerate(certs):
-    print("Cert " +str(i)+": ", k.GetSubjectName())
+    print(f"Cert {i}: {k.GetSubjectName()}")
 
-b = cryptofw.Blob([1,2,3])
-b.push_back(2)
+data = [1,2,3]
+data.append(1)
 
-print("Data (hex): ", list(b))
+print("Data (hex): ", data)
 print("Cert obj: ", cert)
-signed = cert.SignCades(b, cryptofw.CadesType_kBes, False)
+signed = cert.SignCades(data, cryptofw.CadesType_kBes, False)
 # print("Signed message (hex): ", signed)
 print("Signed message size: ", len(signed))
 
 verified = csp.VerifyCadesAttached(signed, 0)
 print(verified)
 
-encrypted = cert.Encrypt(b)
+encrypted = cert.Encrypt(data)
 decrypted = cert.Decrypt(encrypted)
 print("Encrypted data size:", len(encrypted))
 print("Decrypted data:", decrypted)
-encrypted = csp.EncryptWithCertificate(b, cert.asVipNetCertificate())
-decrypted = csp.DecryptWithCertificate(encrypted, cert.asVipNetCertificate())
-print("Encrypted data size:", len(encrypted))
-print("Decrypted data:", decrypted)
-cryptofw.SaveDataToFile(decrypted, "ababbbb")
+cryptofw.Utils.SaveDataToFile(decrypted, "ababbbb")
