@@ -420,3 +420,4 @@ out
 .vscode
 
 python/swig_generated
+java/swig_generated
