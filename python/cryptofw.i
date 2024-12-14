@@ -24,7 +24,7 @@
 %shared_ptr(VipNetCertificate);
 %template(CertificateVector) std::vector<std::shared_ptr<ICertificate>>;
 
-%extend CryptoProCsp {
+%extend ICsp {
     std::shared_ptr<ICertificate> get_certificate(size_t index) {
         const auto& certificates = self->GetCertificates();
         if (index >= certificates.size()) {
@@ -35,6 +35,15 @@
     
     size_t get_certificate_count() {
         return self->GetCertificates().size();
+    }
+}
+
+%extend ICertificate {
+    VipNetCertificate *asVipNetCertificate() {
+        return dynamic_cast<VipNetCertificate *>(self);
+    }
+    CryptoProCertificate *asCryptoProCetificate() {
+        return dynamic_cast<CryptoProCertificate *>(self);
     }
 }
 
