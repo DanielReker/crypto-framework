@@ -56,7 +56,7 @@ namespace CryptoFwApp
                 print_bytes(decrypted);
 
                 // Сохранение данных в файл
-                Utils.SaveDataToFile(decrypted, "ababbbb");
+                Utils.SaveDataToFile(decrypted, "test_file.dat");
             }
             catch (Exception e)
             {

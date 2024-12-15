@@ -419,6 +419,5 @@ out
 
 .vscode
 
-python/swig_generated
-java/swig_generated
-csharp/swig_generated
+*swig_generated
+test_file.dat

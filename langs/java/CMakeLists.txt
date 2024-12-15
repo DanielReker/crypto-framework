@@ -7,7 +7,7 @@ include_directories(${JAVA_HOME}/include/win32)
 
 find_package(Java REQUIRED)
 
-set(SWIG_INPUT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cryptofw.i")
+set(SWIG_INPUT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../cryptofw.i")
 set(SWIG_MODULE_NAME "java_cryptofw")
 
 set(SWIG_GENERATED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/swig_generated")

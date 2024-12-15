@@ -7,7 +7,7 @@ set(Python_LIBRARIES C:/ProgramData/anaconda3/libs/python312.lib)
 
 find_package(Python3 REQUIRED)
 
-set(SWIG_INPUT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cryptofw.i")
+set(SWIG_INPUT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../cryptofw.i")
 set(SWIG_MODULE_NAME "py_cryptofw")
 
 set(SWIG_GENERATED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/swig_generated")
