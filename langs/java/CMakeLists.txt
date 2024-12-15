@@ -1,11 +1,8 @@
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 
-set(JAVA_HOME "C:/Program Files/Java/jdk-21")
-include_directories(${JAVA_HOME}/include)
-include_directories(${JAVA_HOME}/include/win32)
-
-find_package(Java REQUIRED)
+find_package(JNI REQUIRED)
+include_directories(${JNI_INCLUDE_DIRS})
 
 set(SWIG_INPUT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../cryptofw.i")
 set(SWIG_MODULE_NAME "java_cryptofw")
