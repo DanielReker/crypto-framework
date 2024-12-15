@@ -1,3 +1,7 @@
+if(POLICY CMP0122)
+    cmake_policy(SET CMP0122 NEW) #remove swig warning about policy
+endif()
+
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 
