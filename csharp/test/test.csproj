@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <Platforms>x64</Platforms>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../swig_generated\Blob.cs" />
+    <Compile Include="../swig_generated\CadesType.cs" />
+    <Compile Include="../swig_generated\CertificateVector.cs" />
+    <Compile Include="../swig_generated\cryptofw.cs" />
+    <Compile Include="../swig_generated\cryptofwPINVOKE.cs" />
+    <Compile Include="../swig_generated\ICertificate.cs" />
+    <Compile Include="../swig_generated\ICsp.cs" />
+    <Compile Include="../swig_generated\Utils.cs" />
+    <Compile Include="../swig_generated\XadesType.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Указываем путь к скомпилированной библиотеке -->
+    <Content Include="../swig_generated/csharp_cryptofw.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

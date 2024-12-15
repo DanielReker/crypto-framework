@@ -1,0 +1,38 @@
+find_package(SWIG REQUIRED)
+include(${SWIG_USE_FILE})
+
+# set(JAVA_HOME "C:/Program Files/Java/jdk-21")
+# include_directories(${JAVA_HOME}/include)
+# include_directories(${JAVA_HOME}/include/win32)
+
+# find_package(Java REQUIRED)
+set(CMAKE_CSharp_FLAGS "/langversion:latest")
+
+set(SWIG_INPUT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cryptofw.i")
+set(SWIG_MODULE_NAME "csharp_cryptofw")
+
+set(SWIG_GENERATED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/swig_generated")
+file(MAKE_DIRECTORY ${SWIG_GENERATED_DIR})
+
+set_source_files_properties(${SWIG_INPUT_FILE} PROPERTIES CPLUSPLUS ON)
+set(CMAKE_SWIG_OUTDIR ${SWIG_GENERATED_DIR})
+
+swig_add_library(${SWIG_MODULE_NAME}
+    TYPE MODULE
+    LANGUAGE csharp
+    SOURCES ${SWIG_INPUT_FILE}
+)
+
+set_target_properties(${SWIG_MODULE_NAME} PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY ${SWIG_GENERATED_DIR}
+    LIBRARY_OUTPUT_DIRECTORY ${SWIG_GENERATED_DIR}
+    RUNTIME_OUTPUT_DIRECTORY ${SWIG_GENERATED_DIR}
+    SWIG_GENERATED_FILE_DIR ${SWIG_GENERATED_DIR}
+)
+
+target_link_libraries(${SWIG_MODULE_NAME} PRIVATE cryptofw ${Python_LIBRARIES})
+
+target_include_directories(${SWIG_MODULE_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}
+)
