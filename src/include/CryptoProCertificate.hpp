@@ -22,7 +22,6 @@ public:
     Blob Encrypt(const Blob& data) const override;
     Blob Decrypt(const Blob& encrypted_data) const override;
     Blob SignCades(const Blob& data, CadesType type, bool detached) const override;
-    Blob SignXades(const Blob& data, XadesType type) const override;
 
     std::string GetSubjectName() const override;
 };

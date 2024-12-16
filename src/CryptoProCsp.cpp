@@ -260,11 +260,3 @@ bool CryptoProCsp::VerifyCadesDetached(const Blob& signature, const Blob& source
         throw std::runtime_error("Invalid signature type");
     }
 }
-
-Blob CryptoProCsp::SignXadesWithCertificate(const Blob& data, XadesType type, const CryptoProCertificate& cert) const {
-    throw std::logic_error("CryptoPro XAdES signing is not implemented yet");
-}
-
-bool CryptoProCsp::VerifyXades(const Blob& signature, XadesType type) const {
-    throw std::logic_error("CryptoPro XAdES verification is not implemented yet");
-}

@@ -15,7 +15,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-find_package(CryptoPro COMPONENTS cades xades)
+find_package(CryptoPro COMPONENTS cades)
 
 add_subdirectory(src)
 add_subdirectory(apps/demo)

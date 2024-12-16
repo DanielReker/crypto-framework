@@ -18,10 +18,6 @@ Blob CryptoProCertificate::SignCades(const Blob& data, CadesType type, bool deta
 	return crypto_pro_csp_.SignCadesWithCertificate(data, type, *this, detached);
 }
 
-Blob CryptoProCertificate::SignXades(const Blob& data, XadesType type) const {
-	return crypto_pro_csp_.SignXadesWithCertificate(data, type, *this);
-}
-
 std::string CryptoProCertificate::GetSubjectName() const {
 	return subject_name_;
 }

@@ -6,7 +6,6 @@
 #include "cryptofw/Blob.hpp"
 #include "cryptofw/ICsp.hpp"
 #include "cryptofw/CadesType.hpp"
-#include "cryptofw/XadesType.hpp"
 
 
 class VipNetCertificate;
@@ -32,7 +31,4 @@ public:
 
     bool VerifyCadesAttached(const Blob& signature, CadesType type) const override;
     bool VerifyCadesDetached(const Blob& signature, const Blob& source, CadesType type) const override;
-
-    Blob SignXadesWithCertificate(const Blob& data, XadesType type, const VipNetCertificate& cert) const;
-    bool VerifyXades(const Blob& signature, XadesType type) const override;
 };

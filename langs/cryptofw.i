@@ -5,7 +5,6 @@
 #include "../include/cryptofw/ICertificate.hpp"
 #include "../include/cryptofw/utils.hpp"
 #include "../include/cryptofw/CadesType.hpp"
-#include "../include/cryptofw/XadesType.hpp"
 %}
 %include <std_string.i>
 %include <std_vector.i>
@@ -28,4 +27,3 @@
 %include "../include/cryptofw/ICsp.hpp"
 %include "../include/cryptofw/ICertificate.hpp"
 %include "../include/cryptofw/CadesType.hpp"
-%include "../include/cryptofw/XadesType.hpp"

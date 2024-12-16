@@ -15,7 +15,6 @@
     <Compile Include="../swig_generated\ICertificate.cs" />
     <Compile Include="../swig_generated\ICsp.cs" />
     <Compile Include="../swig_generated\Utils.cs" />
-    <Compile Include="../swig_generated\XadesType.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -148,11 +148,3 @@ bool VipNetCsp::VerifyCadesDetached(const Blob& signature, const Blob& source, C
     }
     else return VerifyDetachedSignVipnet(signature, source);
 }
-
-Blob VipNetCsp::SignXadesWithCertificate(const Blob& data, XadesType type, const VipNetCertificate& cert) const {
-    throw std::logic_error("VipNet XAdES signing is not implemented yet");
-}
-
-bool VipNetCsp::VerifyXades(const Blob& signature, XadesType type) const {
-    throw std::logic_error("VipNet XAdES verification is not implemented yet");
-}
