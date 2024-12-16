@@ -421,5 +421,4 @@ out
 
 *swig_generated
 test_file.dat
-java/*.class
-java/*.java
+*.class
