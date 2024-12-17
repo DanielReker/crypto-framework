@@ -2,7 +2,7 @@ add_library(cryptofw-backend "cryptofw-backend.cpp" "include/cryptofw-backend.h"
 
 target_include_directories(cryptofw-backend PUBLIC "./include")
 
-target_link_libraries(cryptofw-backend PRIVATE CryptoPro::cades)
+target_link_libraries(cryptofw-backend PRIVATE CryptoPro::cades crypt32)
 
 target_compile_features(cryptofw-backend PRIVATE cxx_std_14)
 
