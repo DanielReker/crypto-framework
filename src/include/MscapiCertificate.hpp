@@ -21,7 +21,7 @@ public:
 
     Blob Encrypt(const Blob& data) const override;
     Blob Decrypt(const Blob& encrypted_data) const override;
-    Blob SignCades(const Blob& data, CadesType type, bool detached) const override;
+    Blob SignCades(const Blob& data, CadesType type, bool detached, const std::wstring& tsp_server_url = L"") const override;
 
     std::string GetSubjectName() const override;
 };

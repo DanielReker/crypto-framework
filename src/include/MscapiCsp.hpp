@@ -25,7 +25,7 @@ public:
 
     Blob DecryptWithCertificate(const Blob& encrypted_data, const MscapiCertificate& cert) const;
 
-    virtual Blob SignCadesWithCertificate(const Blob& data, CadesType type, const MscapiCertificate& cert, bool detached) const;
+    virtual Blob SignCadesWithCertificate(const Blob& data, CadesType type, const MscapiCertificate& cert, bool detached, const std::wstring& tsp_server_url = L"") const;
 
     bool VerifyCadesAttached(const Blob& signature, CadesType type) const override;
     bool VerifyCadesDetached(const Blob& signature, const Blob& source, CadesType type) const override;

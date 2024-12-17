@@ -9,6 +9,8 @@
 
 void DemonstrateCsp(std::shared_ptr<ICsp> csp, const std::string& name) {
 	try {
+		std::wstring tsp_server_url = L"http://pki.tax.gov.ru/tsp/tsp.srf";
+
 		std::cout << "Demonstrating " << name << ":\n";
 
 		const auto& certs = csp->GetCertificates();
@@ -44,11 +46,11 @@ void DemonstrateCsp(std::shared_ptr<ICsp> csp, const std::string& name) {
 		Utils::SaveDataToFile(cades_bes_attached, name + "/cadesBesAttached.p7s");
 		std::cout << (csp->VerifyCadesAttached(cades_bes_attached, CadesType::kBes) ? "Valid" : "Invalid") << '\n';
 
-		const auto& cades_xl_detached = cert->SignCades(file, CadesType::kXLongType1, true);
+		const auto& cades_xl_detached = cert->SignCades(file, CadesType::kXLongType1, true, tsp_server_url);
 		Utils::SaveDataToFile(cades_xl_detached, name + "/cadesXlDetached.p7s");
 		std::cout << (csp->VerifyCadesDetached(cades_xl_detached, file, CadesType::kXLongType1) ? "Valid" : "Invalid") << '\n';
 
-		const auto& cades_xl_attached = cert->SignCades(file, CadesType::kXLongType1, false);
+		const auto& cades_xl_attached = cert->SignCades(file, CadesType::kXLongType1, false, tsp_server_url);
 		Utils::SaveDataToFile(cades_xl_attached, name + "/cadesXlAttached.p7s");
 		std::cout << ((csp->VerifyCadesAttached(cades_xl_attached, CadesType::kXLongType1)) ? "Valid" : "Invalid") << '\n';
 

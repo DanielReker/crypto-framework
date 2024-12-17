@@ -7,7 +7,7 @@
 
 
 std::shared_ptr<ICsp> Utils::GetCryptoProCsp() {
-    return std::make_shared<CryptoProCsp>(L"http://pki.tax.gov.ru/tsp/tsp.srf");
+    return std::make_shared<CryptoProCsp>();
 }
 
 std::shared_ptr<ICsp> Utils::GetVipNetCsp() {

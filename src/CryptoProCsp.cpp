@@ -1,19 +1,19 @@
 #include "CryptoProCsp.hpp"
 
 
-CryptoProCsp::CryptoProCsp(const std::wstring& tsp_server_url)
-	: MscapiCsp("Crypto-Pro"), tsp_server_url_(tsp_server_url) { }
+CryptoProCsp::CryptoProCsp()
+	: MscapiCsp("Crypto-Pro") { }
 
-Blob CryptoProCsp::SignCadesWithCertificate(const Blob& data, CadesType type, const MscapiCertificate& cert, bool detached) const {
+Blob CryptoProCsp::SignCadesWithCertificate(const Blob& data, CadesType type, const MscapiCertificate& cert, bool detached, const std::wstring& tsp_server_url) const {
 	if (type == CadesType::kBes)
-		return MscapiCsp::SignCadesWithCertificate(data, type, cert, detached);
+		return MscapiCsp::SignCadesWithCertificate(data, type, cert, detached, tsp_server_url);
 
     _Blob _data;
     _data.size = data.size();
     _data.data = (uint8_t*)data.data();
 
     _Blob signature;
-    _CryptoProSignCadesXl(cert.GetCertContext(), _data, detached, tsp_server_url_.c_str(), &signature);
+    _CryptoProSignCadesXl(cert.GetCertContext(), _data, detached, tsp_server_url.c_str(), &signature);
 
     Blob result(signature.data, signature.data + signature.size);
     delete[] signature.data;

@@ -14,8 +14,8 @@ Blob MscapiCertificate::Decrypt(const Blob& encrypted_data) const {
 	return vip_net_csp_.DecryptWithCertificate(encrypted_data, *this);
 }
 
-Blob MscapiCertificate::SignCades(const Blob& data, CadesType type, bool detached) const {
-	return vip_net_csp_.SignCadesWithCertificate(data, type, *this, detached);
+Blob MscapiCertificate::SignCades(const Blob& data, CadesType type, bool detached, const std::wstring& tsp_server_url) const {
+	return vip_net_csp_.SignCadesWithCertificate(data, type, *this, detached, tsp_server_url);
 }
 
 std::string MscapiCertificate::GetSubjectName() const {

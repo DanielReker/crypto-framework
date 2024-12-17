@@ -11,13 +11,10 @@
 class MscapiCertificate;
 
 class CryptoProCsp : public MscapiCsp {
-private:
-    std::wstring tsp_server_url_;
-
 public:
-    CryptoProCsp(const std::wstring& tsp_server_url);
+    CryptoProCsp();
 
-    Blob SignCadesWithCertificate(const Blob& data, CadesType type, const MscapiCertificate& cert, bool detached) const override;
+    Blob SignCadesWithCertificate(const Blob& data, CadesType type, const MscapiCertificate& cert, bool detached, const std::wstring& tsp_server_url = L"") const override;
 
     bool VerifyCadesAttached(const Blob& signature, CadesType type) const override;
     bool VerifyCadesDetached(const Blob& signature, const Blob& source, CadesType type) const override;

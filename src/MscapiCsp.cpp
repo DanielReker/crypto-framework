@@ -54,7 +54,7 @@ Blob MscapiCsp::DecryptWithCertificate(const Blob& encrypted_data, const MscapiC
     return result;
 }
 
-Blob MscapiCsp::SignCadesWithCertificate(const Blob& data, CadesType type, const MscapiCertificate& cert, bool detached) const {
+Blob MscapiCsp::SignCadesWithCertificate(const Blob& data, CadesType type, const MscapiCertificate& cert, bool detached, const std::wstring& tsp_server_url) const {
     if (type != CadesType::kBes)
         throw std::logic_error("MS CryptoApi only supports CAdES BES signatures");
 
