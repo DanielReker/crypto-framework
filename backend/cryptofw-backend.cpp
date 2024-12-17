@@ -20,6 +20,37 @@ const char* _GetErrorMessage(_Error error) {
     return error_messages[error].c_str();
 }
 
+_Error _IsMscapiCspAvailable(const char* csp_name, bool* out) {
+    std::string csp_name_str = std::string(csp_name);
+
+    *out = false;
+
+    DWORD cb_name = 0;
+    DWORD dw_type = 0;
+    DWORD dw_index = 0;
+    CHAR* pszName = NULL;
+
+    while (CryptEnumProviders(dw_index, NULL, 0, &dw_type, NULL, &cb_name)) {
+        if (!(pszName = (LPTSTR)LocalAlloc(LMEM_ZEROINIT, cb_name))) {
+            return E_UNKNOWN;
+        }
+
+        if (CryptEnumProviders(dw_index++, NULL, 0, &dw_type, pszName, &cb_name)) {
+            if (std::string(pszName).find(csp_name_str) != std::string::npos) {
+                *out = true;
+                LocalFree(pszName);
+                return E_OK;
+            }
+        }
+        else {
+            LocalFree(pszName);
+            return E_UNKNOWN;
+        }
+        LocalFree(pszName);
+    }
+
+    return E_OK;
+}
 
 _Error _GetMscapiCspCertificates(const char* csp_name, _MscapiCertificatesList* out) {
     std::vector<PCCERT_CONTEXT> cert_contexts;

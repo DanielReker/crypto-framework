@@ -35,6 +35,7 @@ extern "C" {
 		size_t count;
 	} _MscapiCertificatesList;
 
+	_Error _IsMscapiCspAvailable(const char* csp_name, bool* out);
 
 	_Error _GetMscapiCspCertificates(const char* csp_name, _MscapiCertificatesList* out);
 	_Error _DoesMscapiCertificateBelongToCsp(_MscapiCertificate* certificate, const char* csp_name, bool* result);

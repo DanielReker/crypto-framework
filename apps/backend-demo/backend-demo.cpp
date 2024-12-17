@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <vector>
 
 #include "cryptofw-backend.h"
 
@@ -14,6 +15,14 @@ std::ostream& operator<<(std::ostream& out, _Blob blob) {
 }
 
 int main() {
+	std::vector<std::string> csp_names = { "1T3es+T_CS!p", "Crypto-Pro", "Infotecs", "12345_some_csp" };
+	for (const auto& csp_name : csp_names) {
+		bool available;
+		_IsMscapiCspAvailable(csp_name.c_str(), &available);
+		std::cout << csp_name << " available: " << available << '\n';
+	}
+
+
 	uint8_t _data[16] = { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF };
 	_Blob data;
 	data.size = 16;
