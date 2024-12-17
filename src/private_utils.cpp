@@ -200,32 +200,3 @@ Blob DecryptData(PCCERT_CONTEXT cert, const Blob& encrypted_data)
     return decrypted_data;
 }
 
-std::shared_ptr<ICsp> GetAvailableCsp(){
-    static std::vector<std::pair<std::string, std::shared_ptr<ICsp>>> providers = {
-        {"Crypto-Pro", std::make_shared<CryptoProCsp>()},
-        {"Infotecs", std::make_shared<VipNetCsp>()}
-    };
-
-    DWORD cb_name;
-    DWORD dw_type;
-    DWORD dw_index;
-    CHAR *pszName = NULL; 
-
-    dw_index = 0;
-    while (CryptEnumProviders(dw_index, NULL, 0, &dw_type, NULL, &cb_name)) {
-        if (!(pszName = (LPTSTR)LocalAlloc(LMEM_ZEROINIT, cb_name))) {
-           throw std::runtime_error("LocalAlloc failed\n");
-        }
-        
-        if (CryptEnumProviders(dw_index++, NULL, 0, &dw_type, pszName, &cb_name)) {
-            for(const auto& prov : providers){
-                if(std::string(pszName).find(prov.first) != std::string::npos)
-                    return prov.second;
-            }
-        }
-        else {
-            throw std::runtime_error("CryptEnumProviders failed.\n");
-        }
-        LocalFree(pszName);
-    }
-}

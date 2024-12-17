@@ -25,4 +25,3 @@ const char* GetHashOid(PCCERT_CONTEXT p_cert);
 Blob EncryptData(PCCERT_CONTEXT cert, const Blob& sourceData);
 Blob DecryptData(PCCERT_CONTEXT cert, const Blob& encryptedData);
 
-std::shared_ptr<ICsp> GetAvailableCsp();
