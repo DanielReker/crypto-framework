@@ -30,10 +30,11 @@ void DemonstrateCsp(std::shared_ptr<ICsp> csp, const std::string& name) {
 
 		const auto& encrypted = cert->Encrypt(file);
 		Utils::SaveDataToFile(encrypted, name + "/encrypted.p7e");
+		std::cout << "Encrypted size: " << std::dec << encrypted.size() << '\n';
 
 		const auto& decrypted = cert->Decrypt(encrypted);
 		Utils::SaveDataToFile(decrypted, name + "/decrypted.dat");
-		std::cout << "Decrypted: " << file << '\n';
+		std::cout << "Decrypted: " << decrypted << '\n';
 
 		const auto& cades_bes_detached = cert->SignCades(file, CadesType::kBes, true);
 		Utils::SaveDataToFile(cades_bes_detached, name + "/cadesBesDetached.p7s");

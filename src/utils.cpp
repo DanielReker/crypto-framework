@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iomanip>
 
 #include "cryptofw/Utils.hpp"
 #include "CryptoProCsp.hpp"
@@ -20,7 +21,7 @@ void Utils::SaveDataToFile(const Blob& data, const std::string& file_path) {
 
 std::ostream& operator<<(std::ostream& out, const Blob& blob) {
 	for (auto byte : blob) {
-		out << std::hex << static_cast<int>(byte);
+		out << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(byte) << ' ';
 	}
 	return out;
 }
