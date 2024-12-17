@@ -79,7 +79,7 @@ bool MscapiCsp::VerifyCadesAttached(const Blob& signature, CadesType type) const
     _signature.data = (uint8_t*)signature.data();
 
     bool verification;
-    _MscapiVerifyAttachedSign(_signature, &verification);
+    _MscapiVerifyCadesBesAttached(_signature, &verification);
 
     return verification;
 }
@@ -97,7 +97,7 @@ bool MscapiCsp::VerifyCadesDetached(const Blob& signature, const Blob& source, C
     _source.data = (uint8_t*)source.data();
 
     bool verification;
-    _MscapiVerifyDetachedSign(_signature, _source, &verification);
+    _MscapiVerifyCadesBesDetached(_signature, _source, &verification);
 
     return verification;
 }

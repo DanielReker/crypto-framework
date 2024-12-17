@@ -58,11 +58,11 @@ int main() {
 	std::cout << "Attached | " << attached;
 
 	bool detached_verified;
-	_MscapiVerifyDetachedSign(detached, data, &detached_verified);
+	_MscapiVerifyCadesBesDetached(detached, data, &detached_verified);
 	std::cout << "Detached verified | " << detached_verified << '\n';
 
 	bool attached_verified;
-	_MscapiVerifyAttachedSign(attached, &attached_verified);
+	_MscapiVerifyCadesBesAttached(attached, &attached_verified);
 	std::cout << "Attached verified | " << attached_verified << '\n';
 
 
