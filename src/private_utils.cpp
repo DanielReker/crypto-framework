@@ -9,7 +9,7 @@
 
 #include <cades.h>
 
-#include "VipNetCsp.hpp"
+#include "MscapiCsp.hpp"
 #include "private_utils.hpp"
 #include "CryptoProCsp.hpp"
 

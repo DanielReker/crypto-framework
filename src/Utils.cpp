@@ -3,15 +3,15 @@
 
 #include "cryptofw/Utils.hpp"
 #include "CryptoProCsp.hpp"
-#include "VipNetCsp.hpp"
+#include "MscapiCsp.hpp"
 
 
 std::shared_ptr<ICsp> Utils::GetCryptoProCsp() {
-    return std::make_shared<CryptoProCsp>();
+    return std::make_shared<MscapiCsp>("Crypto-Pro");
 }
 
 std::shared_ptr<ICsp> Utils::GetVipNetCsp() {
-    return std::make_shared<VipNetCsp>();
+    return std::make_shared<MscapiCsp>("Infotecs");
 }
 
 void Utils::SaveDataToFile(const Blob& data, const std::string& file_path) {

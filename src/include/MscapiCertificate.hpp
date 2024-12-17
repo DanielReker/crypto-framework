@@ -1,22 +1,23 @@
 #pragma once
 
-#include <windows.h>
-#include <wincrypt.h>
 #include "cryptofw/ICertificate.hpp"
+
+#include "cryptofw-backend.h"
+
 #include <string>
 
 
-class VipNetCsp;
+class MscapiCsp;
 
-class VipNetCertificate : public ICertificate {
+class MscapiCertificate : public ICertificate {
 private:
-    const VipNetCsp& vip_net_csp_;
+    const MscapiCsp& vip_net_csp_;
     std::string subject_name_;
-    PCCERT_CONTEXT context_;
+    _MscapiCertificate* context_;
 
 public:
-    VipNetCertificate(const VipNetCsp& vip_net_csp, const std::string& subject_name, PCCERT_CONTEXT context);
-    PCCERT_CONTEXT GetCertContext() const;
+    MscapiCertificate(const MscapiCsp& vip_net_csp, const std::string& subject_name, _MscapiCertificate* context);
+    _MscapiCertificate* GetCertContext() const;
 
     Blob Encrypt(const Blob& data) const override;
     Blob Decrypt(const Blob& encrypted_data) const override;

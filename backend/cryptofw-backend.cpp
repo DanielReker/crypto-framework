@@ -278,7 +278,7 @@ _Error _MscapiSignCadesBes(_MscapiCertificate* cert, bool detached, _Blob data, 
     return E_OK;
 }
 
-_Error _MscapiVerifyDetachedSignVipnet(_Blob signature, _Blob message, bool* out) {
+_Error _MscapiVerifyDetachedSign(_Blob signature, _Blob message, bool* out) {
     CRYPT_VERIFY_MESSAGE_PARA verify_params;
     memset(&verify_params, 0, sizeof(verify_params));
     verify_params.cbSize = sizeof(verify_params);
@@ -309,7 +309,7 @@ _Error _MscapiVerifyDetachedSignVipnet(_Blob signature, _Blob message, bool* out
     return E_OK;
 }
 
-_Error _MscapiVerifyAttachedSignVipnet(_Blob signature, bool* out) {
+_Error _MscapiVerifyAttachedSign(_Blob signature, bool* out) {
     std::vector<BYTE> message;
     CRYPT_VERIFY_MESSAGE_PARA verify_param;
     memset(&verify_param, 0, sizeof(verify_param));

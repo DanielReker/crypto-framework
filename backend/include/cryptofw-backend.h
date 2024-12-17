@@ -1,3 +1,5 @@
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -44,8 +46,8 @@ extern "C" {
 	_Error _MscapiDecryptData(_MscapiCertificate* cert, _Blob encrypted_data, _Blob* out);
 
 	_Error _MscapiSignCadesBes(_MscapiCertificate* cert, bool detached, _Blob data, _Blob* out);
-	_Error _MscapiVerifyDetachedSignVipnet(_Blob signature, _Blob message, bool* out);
-	_Error _MscapiVerifyAttachedSignVipnet(_Blob signature, bool* out);
+	_Error _MscapiVerifyDetachedSign(_Blob signature, _Blob message, bool* out);
+	_Error _MscapiVerifyAttachedSign(_Blob signature, bool* out);
 
 
 #ifdef __cplusplus
