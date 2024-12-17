@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 
 #include "cryptofw-backend.h"
 
@@ -6,7 +7,7 @@
 std::ostream& operator<<(std::ostream& out, _Blob blob) {
 	out << "Size: " << std::dec << blob.size << ", data: ";
 	for (size_t i = 0; i < blob.size; i++) {
-		out << std::hex << static_cast<int>(blob.data[i]);
+		out << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(blob.data[i]) << ' ';
 	}
 	out << '\n';
 	return out;
