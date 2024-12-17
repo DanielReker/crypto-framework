@@ -343,3 +343,106 @@ _Error _MscapiVerifyAttachedSign(_Blob signature, bool* out) {
     *out = true;
     return E_OK;
 }
+
+
+_Error _CryptoProSignCadesXl(_MscapiCertificate* cert, _Blob data, bool detached, const wchar_t* tsp_service_url, _Blob* out) {
+    PCCERT_CONTEXT mscapi_cert = (PCCERT_CONTEXT)cert;
+
+
+    CRYPT_SIGN_MESSAGE_PARA sign_param = { sizeof(sign_param) };
+    sign_param.dwMsgEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
+    sign_param.pSigningCert = mscapi_cert;
+    sign_param.HashAlgorithm.pszObjId = (LPSTR)_MscapiGetHashOid(cert);
+
+    CADES_SERVICE_CONNECTION_PARA tsp_connection_para = { sizeof(tsp_connection_para) };
+    tsp_connection_para.wszUri = tsp_service_url;
+
+    CADES_SIGN_PARA cades_sign_para = { sizeof(cades_sign_para) };
+    cades_sign_para.dwCadesType = CADES_X_LONG_TYPE_1;
+    cades_sign_para.pTspConnectionPara = &tsp_connection_para;
+
+    CADES_SIGN_MESSAGE_PARA para = { sizeof(para) };
+    para.pSignMessagePara = &sign_param;
+    para.pCadesSignPara = &cades_sign_para;
+
+    const uint8_t* pb_to_be_signed[] = { data.data };
+    DWORD cb_to_be_signed[] = { (DWORD)data.size };
+    PCRYPT_DATA_BLOB p_signed_message = 0;
+
+
+    if (!CadesSignMessage(&para, detached, 1, pb_to_be_signed, cb_to_be_signed, &p_signed_message)) {
+        return E_UNKNOWN;
+    }
+
+    out->size = static_cast<size_t>(p_signed_message->cbData);
+    out->data = new uint8_t[out->size];
+    std::memcpy(out->data, p_signed_message->pbData, out->size);
+
+    if (!CadesFreeBlob(p_signed_message)) {
+        return E_UNKNOWN;
+    }
+
+    return E_OK;
+}
+
+_Error _CryptoProVerifyCadesXlAttached(_Blob signature, bool* out) {
+    CRYPT_VERIFY_MESSAGE_PARA crypt_verify_params = { sizeof(crypt_verify_params) };
+    crypt_verify_params.dwMsgAndCertEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
+
+    CADES_VERIFICATION_PARA cades_verify_params = { sizeof(cades_verify_params) };
+    cades_verify_params.dwCadesType = CADES_X_LONG_TYPE_1;
+
+    CADES_VERIFY_MESSAGE_PARA verify_params = { sizeof(verify_params) };
+    verify_params.pVerifyMessagePara = &crypt_verify_params;
+    verify_params.pCadesVerifyPara = &cades_verify_params;
+
+    PCADES_VERIFICATION_INFO p_verify_info_attached = 0;
+    PCRYPT_DATA_BLOB p_content = 0;
+    if (!CadesVerifyMessage(&verify_params, 0, signature.data, signature.size, &p_content, &p_verify_info_attached)) {
+        *out = false;
+        return E_OK;
+    }
+
+    bool result = (p_verify_info_attached->dwStatus == CADES_VERIFY_SUCCESS);
+    if (!CadesFreeVerificationInfo(p_verify_info_attached)) {
+        return E_UNKNOWN;
+    }
+    if (!CadesFreeBlob(p_content)) {
+        return E_UNKNOWN;
+    }
+
+    *out = result;
+    return E_OK;
+}
+
+_Error _CryptoProVerifyCadesXlDetached(_Blob signature, _Blob message, bool* out) {
+    CRYPT_VERIFY_MESSAGE_PARA crypt_verify_params = { sizeof(crypt_verify_params) };
+    crypt_verify_params.dwMsgAndCertEncodingType = X509_ASN_ENCODING | PKCS_7_ASN_ENCODING;
+
+    CADES_VERIFICATION_PARA cades_verify_params = { sizeof(cades_verify_params) };
+    cades_verify_params.dwCadesType = CADES_X_LONG_TYPE_1;
+
+    CADES_VERIFY_MESSAGE_PARA verify_params = { sizeof(verify_params) };
+    verify_params.pVerifyMessagePara = &crypt_verify_params;
+    verify_params.pCadesVerifyPara = &cades_verify_params;
+
+    const BYTE* message_ptr = message.data;
+    DWORD message_size = (DWORD)message.size;
+
+    PCADES_VERIFICATION_INFO p_verify_info_detached = 0;
+    PCRYPT_DATA_BLOB p_content = 0;
+    if (!CadesVerifyDetachedMessage(&verify_params, 0, signature.data, (unsigned long)signature.size, 1,
+        &message_ptr, &message_size, &p_verify_info_detached)) {
+
+        *out = false;
+        return E_OK;
+    }
+
+    bool result = (p_verify_info_detached->dwStatus == CADES_VERIFY_SUCCESS);
+    if (!CadesFreeVerificationInfo(p_verify_info_detached)) {
+        return E_UNKNOWN;
+    }
+
+    *out = result;
+    return E_OK;
+}

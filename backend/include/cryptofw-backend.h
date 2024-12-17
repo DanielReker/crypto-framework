@@ -49,6 +49,11 @@ extern "C" {
 	_Error _MscapiVerifyDetachedSign(_Blob signature, _Blob message, bool* out);
 	_Error _MscapiVerifyAttachedSign(_Blob signature, bool* out);
 
+	// CryptoPro
+
+	_Error _CryptoProSignCadesXl(_MscapiCertificate* cert, _Blob data, bool detached, const wchar_t* tsp_service_url, _Blob* out);
+	_Error _CryptoProVerifyCadesXlAttached(_Blob signature, bool* out);
+	_Error _CryptoProVerifyCadesXlDetached(_Blob signature, _Blob message, bool* out);
 
 #ifdef __cplusplus
 }

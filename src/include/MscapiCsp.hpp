@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "cryptofw/Blob.hpp"
 #include "cryptofw/ICsp.hpp"
 #include "cryptofw/CadesType.hpp"
@@ -23,7 +25,7 @@ public:
 
     Blob DecryptWithCertificate(const Blob& encrypted_data, const MscapiCertificate& cert) const;
 
-    Blob SignCadesWithCertificate(const Blob& data, CadesType type, const MscapiCertificate& cert, bool detached) const;
+    virtual Blob SignCadesWithCertificate(const Blob& data, CadesType type, const MscapiCertificate& cert, bool detached) const;
 
     bool VerifyCadesAttached(const Blob& signature, CadesType type) const override;
     bool VerifyCadesDetached(const Blob& signature, const Blob& source, CadesType type) const override;
