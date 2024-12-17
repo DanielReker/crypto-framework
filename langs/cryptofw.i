@@ -15,11 +15,10 @@
 %template(Blob) std::vector<uint8_t>;
 
 %shared_ptr(ICertificate);
-%shared_ptr(CryptoProCertificate);
-%shared_ptr(VipNetCertificate);
+%shared_ptr(MscapiCertificate);
 %shared_ptr(ICsp);
 %shared_ptr(CryptoProCsp);
-%shared_ptr(VipNetCsp);
+%shared_ptr(MscapiCsp);
 %template(CertificateVector) std::vector<std::shared_ptr<ICertificate>>;
 
 %include "../include/cryptofw/Blob.hpp"
