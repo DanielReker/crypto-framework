@@ -1,0 +1,11 @@
+set(DOXYGEN_EXTRACT_ALL YES)
+set(DOXYGEN_BUILTIN_STL_SUPPORT YES)
+
+doxygen_add_docs(docs
+    EXTRACT_ALL YES
+
+    "${PROJECT_SOURCE_DIR}/include/cryptofw"
+
+    USE_MDFILE_AS_MAINPAGE "${PROJECT_SOURCE_DIR}/README.md"
+    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/include/cryptofw"
+)
