@@ -8,6 +8,12 @@ endif()
 
 project (CryptoFramework)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+find_package(CryptoPro COMPONENTS cades)
+
+add_subdirectory(src)
+add_subdirectory(backend)
+
 # If this is main project
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	set(CMAKE_CXX_EXTENSIONS OFF)
@@ -19,15 +25,10 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	else()
 		message(STATUS "Doxygen not found, not building docs")
 	endif()
+
+	add_subdirectory(apps/demo)
+	add_subdirectory(apps/backend-demo)
+	add_subdirectory(langs/python)
+	add_subdirectory(langs/java)
+	add_subdirectory(langs/csharp)
 endif()
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-find_package(CryptoPro COMPONENTS cades)
-
-add_subdirectory(backend)
-add_subdirectory(src)
-add_subdirectory(apps/demo)
-add_subdirectory(apps/backend-demo)
-add_subdirectory(langs/python)
-add_subdirectory(langs/java)
-add_subdirectory(langs/csharp)
