@@ -13,18 +13,28 @@
  */
 class Utils {
 public:
-	// TODO: Move to Blob implementation
     /**
-     * @brief Saves data to a file.
+     * @brief Saves binary data to file.
      * 
      * Writes the contents of a `Blob` object to the specified file path.
      * 
-     * @param data The data to be saved, provided as a `Blob` object.
+     * @param data The data to be saved, provided as a `Blob`.
      * @param file_path The file path where the data will be written.
      * 
      * @note If the file already exists, it will be overwritten.
      */
 	static void SaveDataToFile(const Blob& data, const std::string& file_path);
+
+    /**
+     * @brief Reads binary data from file.
+     *
+     * Reads file at specified path and returns its binary data as `Blob`.
+     *
+     * @param file_path File path to read data from.
+     * 
+     * @throws std::runtime_error File does not exist.
+     */
+    static Blob ReadDataFromFile(const std::string& file_path);
 };
 
 // TODO: Move to Blob implementation
