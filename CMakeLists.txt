@@ -26,9 +26,30 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 		message(STATUS "Doxygen not found, not building docs")
 	endif()
 
+
 	add_subdirectory(apps/demo)
 	add_subdirectory(apps/backend-demo)
-	add_subdirectory(langs/python)
-	add_subdirectory(langs/java)
-	add_subdirectory(langs/csharp)
+
+	find_package(SWIG)
+	if (SWIG_FOUND)
+		include(${SWIG_USE_FILE})
+
+		find_package(Python3)
+		if (Python3_FOUND)
+			add_subdirectory(langs/python)
+		else()
+			message(STATUS "Python3 not found, not building Python bindings")
+		endif()
+
+		find_package(JNI)
+		if (JNI_FOUND)
+			add_subdirectory(langs/java)
+		else()
+			message(STATUS "JNI not found, not building Java bindings")
+		endif()
+
+		add_subdirectory(langs/csharp)
+	else()
+		message(STATUS "SWIG not found, not building bindings")
+	endif()
 endif()

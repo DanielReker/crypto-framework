@@ -1,7 +1,3 @@
-find_package(SWIG REQUIRED)
-include(${SWIG_USE_FILE})
-
-find_package(JNI REQUIRED)
 include_directories(${JNI_INCLUDE_DIRS})
 
 set(SWIG_INPUT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../cryptofw.i")

@@ -1,9 +1,3 @@
-find_package(SWIG REQUIRED)
-include(${SWIG_USE_FILE})
-
-find_package(Python3 REQUIRED)
-
-
 # python для вызова в execute_process
 find_program(PYTHON_EXECUTABLE
     NAMES python3 python3.11 python3.10 python3.9 python
