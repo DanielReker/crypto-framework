@@ -9,6 +9,7 @@
 #include "../include/cryptofw/CryptoFramework.hpp"
 %}
 %include <std_string.i>
+%include <std_wstring.i>
 %include <std_vector.i>
 %include <std_shared_ptr.i>
 %include <exception.i>
