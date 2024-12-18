@@ -24,8 +24,7 @@ namespace CryptoFwApp
                 Console.Write("Data for work: ");
                 print_bytes(data);
 
-                // Получение VipNetCsp через Utils
-                ICsp csp = Utils.GetVipNetCsp();
+                ICsp csp = CryptoFramework.GetCspInstance(CspType.kCryptoProCsp);
 
                 // Получение сертификатов 
                 var certs = csp.GetCertificates();

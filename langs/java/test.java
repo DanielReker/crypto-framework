@@ -8,8 +8,7 @@ public class test {
             data.add((short)5);
             System.out.println("Data for work: " + data);
 
-            // Получение VipNetCsp через Utils
-            ICsp csp = Utils.GetVipNetCsp();
+            ICsp csp = CryptoFramework.GetCspInstance(CspType.kCryptoProCsp);
 
             // Получение сертификатов 
             List<ICertificate> certs = csp.GetCertificates();

@@ -3,8 +3,10 @@
 #include "../include/cryptofw/Blob.hpp"
 #include "../include/cryptofw/ICsp.hpp"
 #include "../include/cryptofw/ICertificate.hpp"
-#include "../include/cryptofw/utils.hpp"
+#include "../include/cryptofw/Utils.hpp"
 #include "../include/cryptofw/CadesType.hpp"
+#include "../include/cryptofw/CspType.hpp"
+#include "../include/cryptofw/CryptoFramework.hpp"
 %}
 %include <std_string.i>
 %include <std_vector.i>
@@ -22,7 +24,9 @@
 %template(CertificateVector) std::vector<std::shared_ptr<ICertificate>>;
 
 %include "../include/cryptofw/Blob.hpp"
-%include "../include/cryptofw/utils.hpp"
+%include "../include/cryptofw/Utils.hpp"
 %include "../include/cryptofw/ICsp.hpp"
 %include "../include/cryptofw/ICertificate.hpp"
 %include "../include/cryptofw/CadesType.hpp"
+%include "../include/cryptofw/CspType.hpp"
+%include "../include/cryptofw/CryptoFramework.hpp"

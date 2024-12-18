@@ -1,6 +1,6 @@
 from swig_generated import cryptofw
 
-csp = cryptofw.Utils.GetVipNetCsp()
+csp = cryptofw.CryptoFramework.GetCspInstance(cryptofw.CspType_kCryptoProCsp)
 certs = csp.GetCertificates()
 cert = certs[0]
 for i, k in enumerate(certs):

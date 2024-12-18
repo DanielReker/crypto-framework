@@ -15,6 +15,9 @@
     <Compile Include="../swig_generated\ICertificate.cs" />
     <Compile Include="../swig_generated\ICsp.cs" />
     <Compile Include="../swig_generated\Utils.cs" />
+    <Compile Include="../swig_generated\CryptoFramework.cs" />
+    <Compile Include="../swig_generated\CspType.cs" />
+    <Compile Include="../swig_generated\SWIGTYPE_p_std__wstring.cs" />
   </ItemGroup>
 
   <ItemGroup>

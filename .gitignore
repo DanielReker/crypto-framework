@@ -422,3 +422,4 @@ out
 *swig_generated
 test_file.dat
 *.class
+*.sln
