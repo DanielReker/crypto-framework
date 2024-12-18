@@ -8,10 +8,16 @@
 #include "MscapiCertificate.hpp"
 
 
-class MscapiCertificate;
-
 class CryptoProCsp : public MscapiCsp {
+private:
+    static std::shared_ptr<ICsp> instance_;
+
+    static const std::string mscapi_name_;
+
+
 public:
+    static std::shared_ptr<ICsp> GetInstance();
+
     CryptoProCsp();
 
     Blob SignCadesWithCertificate(const Blob& data, CadesType type, const MscapiCertificate& cert, bool detached, const std::wstring& tsp_server_url = L"") const override;

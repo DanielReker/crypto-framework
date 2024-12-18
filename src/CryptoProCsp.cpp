@@ -1,8 +1,23 @@
 #include "CryptoProCsp.hpp"
 
 
-CryptoProCsp::CryptoProCsp()
-	: MscapiCsp("Crypto-Pro") { }
+std::shared_ptr<ICsp> CryptoProCsp::instance_;
+
+const std::string CryptoProCsp::mscapi_name_ = "Crypto-Pro";
+
+
+std::shared_ptr<ICsp> CryptoProCsp::GetInstance() {
+    if (!CryptoProCsp::instance_) {
+        if (MscapiCsp::IsMscapiCspAvailable(CryptoProCsp::mscapi_name_))
+            CryptoProCsp::instance_ = std::make_shared<CryptoProCsp>();
+        else
+            CryptoProCsp::instance_ = std::shared_ptr<CryptoProCsp>();
+    }
+
+    return CryptoProCsp::instance_;
+}
+
+CryptoProCsp::CryptoProCsp() : MscapiCsp(CryptoProCsp::mscapi_name_) { }
 
 Blob CryptoProCsp::SignCadesWithCertificate(const Blob& data, CadesType type, const MscapiCertificate& cert, bool detached, const std::wstring& tsp_server_url) const {
 	if (type == CadesType::kBes)

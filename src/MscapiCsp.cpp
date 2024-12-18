@@ -3,7 +3,7 @@
 #include "MscapiCsp.hpp"
 #include "MscapiCertificate.hpp"
 
-MscapiCsp::MscapiCsp(const std::string& mscapi_name) : mscapi_name_(mscapi_name) {
+MscapiCsp::MscapiCsp(const std::string& mscapi_name) {
     _MscapiCertificatesList certs;
     _Error e = _GetMscapiCspCertificates(mscapi_name.c_str(), &certs);
     if (e != E_OK) throw std::runtime_error(_GetErrorMessage(e));
@@ -21,6 +21,14 @@ MscapiCsp::MscapiCsp(const std::string& mscapi_name) : mscapi_name_(mscapi_name)
     }
 
     delete[] certs.certificates;
+}
+
+bool MscapiCsp::IsMscapiCspAvailable(const std::string& mscapi_csp_name) {
+    bool result;
+    _Error e = _IsMscapiCspAvailable(mscapi_csp_name.c_str(), &result);
+    if (e != E_OK)
+        throw std::runtime_error(_GetErrorMessage(e));
+    return result;
 }
 
 std::vector<std::shared_ptr<ICertificate>> MscapiCsp::GetCertificates() {

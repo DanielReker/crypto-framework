@@ -13,25 +13,6 @@
  */
 class Utils {
 public:
-	// TODO: Make separate class for managing CSPs
-	/**
-     * @brief Retrieves the CryptoPro cryptographic service provider.
-     * 
-     * Creates and returns a shared pointer to an `ICsp` object associated with the CryptoPro provider.
-     * 
-     * @return A shared pointer to the CryptoProCsp object.
-    */
-	static std::shared_ptr<ICsp> GetCryptoProCsp();
-
-    /**
-     * @brief Retrieves the VipNet cryptographic service provider.
-     * 
-     * Creates and returns a shared pointer to an `ICsp` object associated with the VipNet provider.
-     * 
-     * @return A shared pointer to the VipNetCsp object.
-     */
-	static std::shared_ptr<ICsp> GetVipNetCsp();
-	
 	// TODO: Move to Blob implementation
     /**
      * @brief Saves data to a file.

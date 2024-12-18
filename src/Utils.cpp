@@ -3,16 +3,8 @@
 
 #include "cryptofw/Utils.hpp"
 #include "CryptoProCsp.hpp"
-#include "MscapiCsp.hpp"
+#include "VipNetCsp.hpp"
 
-
-std::shared_ptr<ICsp> Utils::GetCryptoProCsp() {
-    return std::make_shared<CryptoProCsp>();
-}
-
-std::shared_ptr<ICsp> Utils::GetVipNetCsp() {
-    return std::make_shared<MscapiCsp>("Infotecs");
-}
 
 void Utils::SaveDataToFile(const Blob& data, const std::string& file_path) {
     std::ofstream outfile(file_path, std::ios::out | std::ios::binary);

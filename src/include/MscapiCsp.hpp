@@ -13,11 +13,12 @@ class MscapiCertificate;
 
 class MscapiCsp : public ICsp {
 private:
-    std::string mscapi_name_;
     std::vector<std::shared_ptr<MscapiCertificate>> certificates_;
 
 public:
     MscapiCsp(const std::string& mscapi_name);
+
+    static bool IsMscapiCspAvailable(const std::string& mscapi_csp_name);
 
     std::vector<std::shared_ptr<ICertificate>> GetCertificates() override;
 

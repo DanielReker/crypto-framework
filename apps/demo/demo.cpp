@@ -5,10 +5,14 @@
 #include <cryptofw/ICertificate.hpp>
 #include <cryptofw/Blob.hpp>
 #include <cryptofw/Utils.hpp>
+#include <cryptofw/CspType.hpp>
+#include <cryptofw/CryptoFramework.hpp>
 
 
-void DemonstrateCsp(std::shared_ptr<ICsp> csp, const std::string& name) {
+void DemonstrateCsp(CspType csp_type, const std::string& name) {
 	try {
+		auto csp = CryptoFramework::GetCspInstance(csp_type);
+
 		std::wstring tsp_server_url = L"http://pki.tax.gov.ru/tsp/tsp.srf";
 
 		std::cout << "Demonstrating " << name << ":\n";
@@ -67,6 +71,6 @@ int main(int argc, char* argv[]) {
 	
 	std::cout << "Hello from CryptoFramework demo app!\n";
 
-	DemonstrateCsp(Utils::GetCryptoProCsp(), "CryptoPro");
-	DemonstrateCsp(Utils::GetVipNetCsp(), "VipNet");
+	DemonstrateCsp(CspType::kCryptoProCsp, "CryptoPro CSP");
+	DemonstrateCsp(CspType::kVipNetCsp, "ViPNet CSP");
 }
