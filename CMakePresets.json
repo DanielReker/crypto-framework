@@ -112,6 +112,18 @@
           "intelliSenseMode": "windows-clang-x86"
         }
       }
+    },
+    {
+      "name": "docs",
+      "displayName": "Documentation",
+      "cacheVariables": {
+        "BUILD_CRYPTOFW": "OFF",
+        "BUILD_APPS": "OFF",
+        "BUILD_PYTHON": "OFF",
+        "BUILD_JAVA": "OFF",
+        "BUILD_CSHARP": "OFF",
+        "BUILD_DOCS": "ON"
+      }
     }
   ]
 }
