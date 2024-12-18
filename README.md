@@ -1,4 +1,4 @@
-# Cryptographic Framework
+# CryptoFramework
 
 This framework simplifies working with various cryptographic providers by offering a unified API for digital signatures and encryption. It abstracts away the complexities of different provider APIs, allowing developers to easily integrate and switch between them without modifying their application code.
 
@@ -22,31 +22,43 @@ This framework acts as a universal adapter, bridging the gap between your applic
 
 ## Getting Started
 
-### Installation
-This project uses CMake. Follow these steps to install and build application:
-```powershell
-git clone https://github.com/DanielReker/crypto-framework.git
-cd crypto-framework
-cmake . -B build/
-cd build
-cmake --build . --config Release # or --config Debug
-```
+### Dependencies
 
-### Build demo app
-```powershell
-cmake --build . --target demo --config Release
-apps/demo/Release/demo.exe # run a demo app to verify an installation
-```
+To work with CryptoFramework, you have to download and install CryptoPro SDK from official website: [https://www.cryptopro.ru/products/cades/sdk](https://www.cryptopro.ru/products/cades/sdk), including runtime libraries.
+
+### Installation
+
+Currently only CMake is supported as build system.
+
+To use CryptoFramework in your CMake project:
+
+1) Clone CryptoFramework repository somewhere in your project like:\
+`git clone https://github.com/DanielReker/crypto-framework.git externals/crypto-framework`
+
+2) Add it in your CMakeLists.txt as a subdirectory:\
+`add_subdirectory(externals/crypto-framework)`\
+It adds `cryptofw` target to your CMake project.
+
+3) Link `cryptofw` to your target like:\
+`target_link_libraries(your-target PRIVATE cryptofw)`
+
+Now CryptoFramework is ready to use!
+
 
 ### Usage
+
+Here's simple example of how you can use CryptoFramework in your app:
+
 ```c++
 #include <iostream>
 #include <cryptofw/ICsp.hpp>
 #include <cryptofw/ICertificate.hpp>
-#include <cryptofw/Utils.hpp>
+#include <cryptofw/CryptoFramework.hpp>
+#include <cryptofw/CspType.hpp>
+
 
 int main() {
-    auto csp = Utils::GetCryptoProCsp(); // Or Utils::GetVipNetCsp()
+    auto csp = CryptoFramework::GetCspInstance(CspType::kCryptoProCsp);
     auto certs = csp->GetCertificates();
     if (certs.empty()) {
         std::cout << "No certificates found.\n";
@@ -76,6 +88,8 @@ int main() {
 }
 ```
 
+You can find complete example in `apps/demo` folder.
+
 ## Language Bindings
 
 This framework provides language bindings for Java, C#, and Python, generated using SWIG. These bindings are packaged as DLL files (shared libraries) located within the respective language directories. You can find the bindings and example code in the following locations:
@@ -88,24 +102,6 @@ This framework provides language bindings for Java, C#, and Python, generated us
 
 The DLL files for each language are located at `langs/<language>/swig_generated/<language>_cryptofw.dll` after build target for specific language.
 
-### Python
-
-The Python bindings are provided as a py_cryptofw.pyd built by SWIG from the `py_cryptofw` CMake target. 
-
-<font size="6"> ***TODO: here is python example from test file, or without it*** </font>
-
-### Java
-
-The Java bindings are provided as a java_cryptofw.dll built by SWIG from the `java_cryptofw` CMake target. 
-
-<font size="6"> ***TODO: here is python example from test file, or without it*** </font>
-
-### C#
-
-The C# bindings are provided as a csharp_cryptofw.pyd built by SWIG from the `csharp_cryptofw` CMake target. 
-
-<font size="6"> ***TODO: here is python example from test file, or without it*** </font>
-
 # Documentation
 
-The documentation for this framework is generated using Doxygen and can be built using the docs CMake target. You'll need to have Doxygen installed on your system to build the documentation.
+The documentation for this framework is generated using Doxygen (complete API reference) and can be built using the docs CMake target. You can find it here: [https://danielreker.github.io/crypto-framework/index.html](https://danielreker.github.io/crypto-framework/index.html)
