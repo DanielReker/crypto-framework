@@ -423,3 +423,5 @@ out
 test_file.dat
 *.class
 *.sln
+langs/*/CryptoPro_CSP/
+langs/*/ViPNet_CSP/
